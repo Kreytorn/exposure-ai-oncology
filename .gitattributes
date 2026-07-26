@@ -1,0 +1,5 @@
+# Normalize line endings — repo runs on Linux/Colab as well as Windows.
+* text=auto eol=lf
+*.ipynb text eol=lf
+*.png binary
+*.gz binary

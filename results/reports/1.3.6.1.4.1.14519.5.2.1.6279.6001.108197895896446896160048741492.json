@@ -1,0 +1,34 @@
+{
+  "study_uid": "1.3.6.1.4.1.14519.5.2.1.6279.6001.108197895896446896160048741492",
+  "findings": [
+    {
+      "lesion_id": "L1",
+      "organ": "lung",
+      "lobe_or_segment": "lower lobe, right",
+      "long_axis_mm": {
+        "value": 6.48,
+        "source": "measure_L1"
+      },
+      "short_axis_mm": {
+        "value": 6.33,
+        "source": "measure_L1"
+      },
+      "volume_mm3": {
+        "value": 240.39,
+        "source": "measure_L1"
+      },
+      "malignancy_score": {
+        "value": 0.002077536890283227,
+        "source": "classify_L1"
+      },
+      "malignancy_confidence": 0.9784931187949736,
+      "recist_category": "non_target",
+      "detector_score": 0.9987094402313232,
+      "requires_review": true,
+      "quality_flags": []
+    }
+  ],
+  "impression": "",
+  "recist_sum_of_diameters_mm": null,
+  "disclaimer": "Research/decision-support output. Not a medical device. All findings are candidates requiring radiologist review."
+}

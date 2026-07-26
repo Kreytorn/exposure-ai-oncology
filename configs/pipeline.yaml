@@ -1,0 +1,52 @@
+# Pipeline configuration: stage toggles, model selection, and license gating.
+
+preprocess:
+  target_spacing_mm: [0.703125, 0.703125, 1.25]   # MONAI detection bundle expectation
+  hu_window: [-1000, 400]                          # clip before any CNN; never strip HU
+
+detect:
+  backend: monai_bundle                            # pretrained lung_nodule_ct_detection
+  score_threshold: 0.5
+  max_lesions_per_study: 10                        # cap per-study segmentation cost
+  patch_size: [192, 192, 80]
+
+segment:
+  backend: medsam2                                 # primary; {medsam2, vista3d}
+  medsam2:
+    checkpoint: MedSAM2_CTLesion.pt
+    config: configs/sam2.1_hiera_t512.yaml
+    # box is placed on the max-area (center) slice, then propagated BOTH directions
+  vista3d:                                          # Apache-2.0 fallback
+    bundle: vista3d
+
+measure:
+  recist_version: "1.1"
+
+classify:
+  backend: cnn_head                                # {cnn_head, radiomics_gbm}
+  malignancy_label_policy:
+    aggregate: median                              # of 4 LIDC readers
+    drop_ambiguous_median_3: true                  # documented bias — see plan.md §4
+
+report:
+  llm: gemini                                      # {claude, gemini}
+  abnormality_first: true
+  require_review_flag: true
+
+agent:                                             # orchestration plane (src/oncoct/agent)
+  # Provider-agnostic loop: only the client differs (src/oncoct/agent/gemini_client.py).
+  # Gemini needs GEMINI_API_KEY in the environment; Claude needs ANTHROPIC_API_KEY.
+  model: gemini-flash-latest
+  gemini_model: gemini-flash-latest                # pro tiers are often out of free quota
+  prompt_path: configs/agent_prompt.md
+  # max_tokens caps thinking + response text together, and Claude Opus 5 thinks by default.
+  max_tokens: 16000
+  # Hard stop on the tool loop. A study caps at 10 lesions x 4 stages + ingest/context/detect
+  # /assemble, so ~45 turns is the realistic worst case; 60 leaves room to recover from a
+  # bad call without letting a wedged agent run forever.
+  max_turns: 60
+
+# Licensing safety: refuse to load weights whose license is stricter than allowed.
+# Set to "research" for this submission; "commercial" would disable MedSAM2 + restricted
+# TotalSegmentator subtasks.
+license_posture: research

@@ -1,0 +1,143 @@
+{
+  "study_uid": "1.3.6.1.4.1.14519.5.2.1.6279.6001.105756658031515062000744821260",
+  "findings": [
+    {
+      "lesion_id": "L1",
+      "organ": "lung",
+      "lobe_or_segment": "upper lobe, left",
+      "long_axis_mm": {
+        "value": 5.67,
+        "source": "measure_L1"
+      },
+      "short_axis_mm": {
+        "value": 4.92,
+        "source": "measure_L1"
+      },
+      "volume_mm3": {
+        "value": 113.09,
+        "source": "measure_L1"
+      },
+      "malignancy_score": {
+        "value": 0.00022553843155037612,
+        "source": "classify_L1"
+      },
+      "malignancy_confidence": 0.9969424044813484,
+      "recist_category": "non_target",
+      "detector_score": 0.9137150049209595,
+      "requires_review": true,
+      "quality_flags": []
+    },
+    {
+      "lesion_id": "L2",
+      "organ": "background",
+      "lobe_or_segment": null,
+      "long_axis_mm": {
+        "value": 14.15,
+        "source": "measure_L2"
+      },
+      "short_axis_mm": {
+        "value": 11.95,
+        "source": "measure_L2"
+      },
+      "volume_mm3": {
+        "value": 1292.2,
+        "source": "measure_L2"
+      },
+      "malignancy_score": {
+        "value": 0.2315593808889389,
+        "source": "classify_L2"
+      },
+      "malignancy_confidence": 0.21928023416383302,
+      "recist_category": "target",
+      "detector_score": 0.8733229041099548,
+      "requires_review": true,
+      "quality_flags": [
+        "outside_lung_parenchyma"
+      ]
+    },
+    {
+      "lesion_id": "L3",
+      "organ": "lung",
+      "lobe_or_segment": "lower lobe, right",
+      "long_axis_mm": {
+        "value": 5.07,
+        "source": "measure_L3"
+      },
+      "short_axis_mm": {
+        "value": 4.22,
+        "source": "measure_L3"
+      },
+      "volume_mm3": {
+        "value": 87.14,
+        "source": "measure_L3"
+      },
+      "malignancy_score": {
+        "value": 0.00017978964024223387,
+        "source": "classify_L3"
+      },
+      "malignancy_confidence": 0.9975038064189017,
+      "recist_category": "non_target",
+      "detector_score": 0.6808785796165466,
+      "requires_review": true,
+      "quality_flags": []
+    },
+    {
+      "lesion_id": "L4",
+      "organ": "lung",
+      "lobe_or_segment": "lower lobe, left",
+      "long_axis_mm": {
+        "value": 5.49,
+        "source": "measure_L4"
+      },
+      "short_axis_mm": {
+        "value": 4.92,
+        "source": "measure_L4"
+      },
+      "volume_mm3": {
+        "value": 93.32,
+        "source": "measure_L4"
+      },
+      "malignancy_score": {
+        "value": 0.00010724867752287537,
+        "source": "classify_L4"
+      },
+      "malignancy_confidence": 0.9984310193934802,
+      "recist_category": "non_target",
+      "detector_score": 0.6313670873641968,
+      "requires_review": true,
+      "quality_flags": []
+    },
+    {
+      "lesion_id": "L5",
+      "organ": "lung",
+      "lobe_or_segment": "lower lobe, left",
+      "long_axis_mm": {
+        "value": 5.07,
+        "source": "measure_L5"
+      },
+      "short_axis_mm": {
+        "value": 4.92,
+        "source": "measure_L5"
+      },
+      "volume_mm3": {
+        "value": 108.15,
+        "source": "measure_L5"
+      },
+      "malignancy_score": {
+        "value": 5.45504462934332e-6,
+        "source": "classify_L5"
+      },
+      "malignancy_confidence": 0.9998967541776903,
+      "recist_category": "non_target",
+      "detector_score": 0.5152540802955627,
+      "requires_review": true,
+      "quality_flags": []
+    }
+  ],
+  "impression": "",
+  "recist_sum_of_diameters_mm": {
+    "value": 14.15,
+    "source": "measure_L2"
+  },
+  "disclaimer": "Research/decision-support output. Not a medical device. All findings are candidates requiring radiologist review."
+}

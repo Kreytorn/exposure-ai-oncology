@@ -1,0 +1,143 @@
+{
+  "study_uid": "1.3.6.1.4.1.14519.5.2.1.6279.6001.105756658031515062000744821260",
+  "findings": [
+    {
+      "lesion_id": "L1",
+      "organ": "lung",
+      "lobe_or_segment": "upper lobe, left",
+      "long_axis_mm": {
+        "value": 5.67,
+        "source": "HbK4ee86"
+      },
+      "short_axis_mm": {
+        "value": 4.92,
+        "source": "HbK4ee86"
+      },
+      "volume_mm3": {
+        "value": 113.09,
+        "source": "HbK4ee86"
+      },
+      "malignancy_score": {
+        "value": 0.00022553843155037612,
+        "source": "uHR5xkNy"
+      },
+      "malignancy_confidence": 0.9969424044813484,
+      "recist_category": "non_target",
+      "detector_score": 0.9137150049209595,
+      "requires_review": true,
+      "quality_flags": []
+    },
+    {
+      "lesion_id": "L2",
+      "organ": "background",
+      "lobe_or_segment": null,
+      "long_axis_mm": {
+        "value": 14.15,
+        "source": "d31253mn"
+      },
+      "short_axis_mm": {
+        "value": 11.95,
+        "source": "d31253mn"
+      },
+      "volume_mm3": {
+        "value": 1292.2,
+        "source": "d31253mn"
+      },
+      "malignancy_score": {
+        "value": 0.2315593808889389,
+        "source": "ak8xYu69"
+      },
+      "malignancy_confidence": 0.21928023416383302,
+      "recist_category": "target",
+      "detector_score": 0.8733229041099548,
+      "requires_review": true,
+      "quality_flags": [
+        "outside_lung_parenchyma"
+      ]
+    },
+    {
+      "lesion_id": "L3",
+      "organ": "lung",
+      "lobe_or_segment": "lower lobe, right",
+      "long_axis_mm": {
+        "value": 5.07,
+        "source": "UMAZmBuP"
+      },
+      "short_axis_mm": {
+        "value": 4.22,
+        "source": "UMAZmBuP"
+      },
+      "volume_mm3": {
+        "value": 87.14,
+        "source": "UMAZmBuP"
+      },
+      "malignancy_score": {
+        "value": 0.00017978964024223387,
+        "source": "TV0Dv6ea"
+      },
+      "malignancy_confidence": 0.9975038064189017,
+      "recist_category": "non_target",
+      "detector_score": 0.6808785796165466,
+      "requires_review": true,
+      "quality_flags": []
+    },
+    {
+      "lesion_id": "L4",
+      "organ": "lung",
+      "lobe_or_segment": "lower lobe, left",
+      "long_axis_mm": {
+        "value": 5.49,
+        "source": "yluGnZ9o"
+      },
+      "short_axis_mm": {
+        "value": 4.92,
+        "source": "yluGnZ9o"
+      },
+      "volume_mm3": {
+        "value": 93.32,
+        "source": "yluGnZ9o"
+      },
+      "malignancy_score": {
+        "value": 0.00010724867752287537,
+        "source": "tsqXVSuB"
+      },
+      "malignancy_confidence": 0.9984310193934802,
+      "recist_category": "non_target",
+      "detector_score": 0.6313670873641968,
+      "requires_review": true,
+      "quality_flags": []
+    },
+    {
+      "lesion_id": "L5",
+      "organ": "lung",
+      "lobe_or_segment": "lower lobe, left",
+      "long_axis_mm": {
+        "value": 5.07,
+        "source": "NINhOryg"
+      },
+      "short_axis_mm": {
+        "value": 4.92,
+        "source": "NINhOryg"
+      },
+      "volume_mm3": {
+        "value": 108.15,
+        "source": "NINhOryg"
+      },
+      "malignancy_score": {
+        "value": 5.45504462934332e-6,
+        "source": "1CuPD1Kb"
+      },
+      "malignancy_confidence": 0.9998967541776903,
+      "recist_category": "non_target",
+      "detector_score": 0.5152540802955627,
+      "requires_review": true,
+      "quality_flags": []
+    }
+  ],
+  "impression": "Chest CT analysis revealed 5 nodular candidate findings. Lesion L1 (5.67 mm long axis, volume 113.09 mm3 in left upper lobe) shows a malignancy score of 0.0002. Lesion L2 (14.15 mm long axis, volume 1292.2 mm3, background) shows a malignancy score of 0.2316. Lesion L3 (5.07 mm long axis, volume 87.14 mm3 in right lower lobe) shows a malignancy score of 0.0002. Lesion L4 (5.49 mm long axis, volume 93.32 mm3 in left lower lobe) shows a malignancy score of 0.0001. Lesion L5 (5.07 mm long axis, volume 108.15 mm3 in left lower lobe) shows a malignancy score of 0.000. All lesions are candidates requiring radiologist review.",
+  "recist_sum_of_diameters_mm": {
+    "value": 14.15,
+    "source": "d31253mn"
+  },
+  "disclaimer": "Research/decision-support output. Not a medical device. All findings are candidates requiring radiologist review."
+}

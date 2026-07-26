@@ -1,0 +1,31 @@
+# Data and model artifacts. LUNA16 raw is ~120GB and never belongs in git.
+data/
+artifacts/
+*.mhd
+*.raw
+*.nii
+*.nii.gz
+*.npz
+*.pt
+*.pth
+*.ckpt
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+.pytest_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# Secrets
+.env
+*.pylidcrc
+
+# OS
+.DS_Store
+Thumbs.db

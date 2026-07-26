@@ -1,0 +1,20 @@
+# Isolated env for the MedSAM2 segmentation tool node ONLY.
+# MedSAM2 pins an exact stack that conflicts with the MONAI/nnU-Net stack in the
+# primary env, so it runs as a separate process/service the agent calls out to.
+# Ref: bowang-lab/MedSAM2 install instructions.
+name: medsam2
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12
+  - pip
+  - pip:
+      # cu124 wheels — install torch/vision from the CUDA 12.4 index:
+      #   pip install torch==2.5.1 torchvision==0.20.1 --index-url https://download.pytorch.org/whl/cu124
+      - torch==2.5.1
+      - torchvision==0.20.1
+      - numpy>=1.26
+      - nibabel>=5.2
+      - SimpleITK>=2.3
+      # then: pip install -e '.[dev]' inside the cloned MedSAM2 repo,
+      #       and: bash download.sh   (fetches MedSAM2_CTLesion.pt into checkpoints/)

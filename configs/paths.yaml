@@ -1,0 +1,20 @@
+# Filesystem + cache locations. Override per machine (laptop vs Colab A100).
+# On Colab, point weight caches at Google Drive so they survive session resets.
+
+data_root: data/
+luna16_root: data/luna16/            # subset0..9, annotations.csv, candidates_V2.csv
+lidc_root: data/lidc-idri/           # DICOM + XML (for pylidc malignancy labels)
+msd_task06_root: data/Task06_Lung/   # MSD lung tumor NIfTI masks
+
+cache_root: artifacts/cache/          # resampled volumes, cached organ maps
+weights_root: artifacts/weights/      # pre-seeded model checkpoints
+
+# nnU-Net env vars (only if the nnU-Net path is used)
+nnunet_raw: artifacts/nnunet/raw/
+nnunet_preprocessed: artifacts/nnunet/preprocessed/
+nnunet_results: artifacts/nnunet/results/
+
+# Model weight caches (pre-seed these to Drive on Colab)
+totalseg_weights: artifacts/weights/totalsegmentator/   # TOTALSEG_WEIGHTS_PATH
+medsam2_checkpoints: artifacts/weights/medsam2/          # MedSAM2_CTLesion.pt etc.
+monai_bundle: artifacts/weights/lung_nodule_ct_detection/

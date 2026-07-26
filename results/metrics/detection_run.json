@@ -1,0 +1,12 @@
+{
+  "n_scans": 89,
+  "n_detections": 1151,
+  "score_threshold": 0.02,
+  "mean_detections_per_scan": 12.932584269662922,
+  "target_spacing_xyz_mm": [
+    0.703125,
+    0.703125,
+    1.25
+  ],
+  "seconds": 884.4
+}
