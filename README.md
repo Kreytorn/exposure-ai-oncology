@@ -30,10 +30,11 @@ calls, and wrote the impression itself.
 | ![lung nodule](docs/img/agent_L1_lung_nodule.png) | ![flagged detection](docs/img/agent_L2_flagged_outside_lung.png) |
 | **L1**: 5.67 mm, 113.09 mm3, lung / upper lobe left, malignancy 0.0002 | **L2**: 14.15 mm, attributed to background, flagged `outside_lung_parenchyma` |
 
-The second one is the interesting case. The detector fired on something in the chest wall,
-outside the lung. Organ attribution caught it, the quality flag surfaced it, and it reached
-the report as a candidate needing review rather than as a lung nodule. The detection threshold
-is deliberately low, so false positives are expected. What matters is that the system says so.
+The second one is the interesting case. The detector was confident about it, score 0.87 at a
+0.5 threshold. Organ attribution then found the mask overlapped no segmented structure at all,
+so it resolved to `background` and `outside_lung_parenchyma` fired. It reached the report as a
+candidate needing review rather than as a 14 mm lung nodule. A detector on its own would have
+reported it; the independent organ check is what caught it.
 
 The agent's own closing line:
 
@@ -60,17 +61,20 @@ Three mechanisms, all tested:
 ## Pipeline
 
 ```
-DICOM/MHD -> resample, HU preserved
+LUNA16 .mhd -> resample, HU preserved
           -> TotalSegmentator (organ map)
           -> MONAI RetinaNet (nodule boxes)
-          -> MedSAM2 (box to 3D mask), VISTA3D fallback
+          -> MedSAM2 (box to 3D mask, isolated env via subprocess worker)
           -> RECIST 1.1 measurement and volume
           -> organ attribution by mask overlap
           -> malignancy classifier
           -> LLM agent: structured report plus trace
 ```
 
-Only the malignancy head is trained. Everything else is pretrained inference.
+Only the malignancy head is trained. Everything else is pretrained inference. Input is the
+LUNA16 MetaImage format; DICOM series conversion is not implemented. VISTA3D is wired as the
+Apache licensed fallback but its `segment()` still raises, so MedSAM2 is the only working
+segmenter. Both are listed under limitations in `plan.md`.
 
 ## Running it
 
@@ -93,7 +97,7 @@ supporting a second one, because the loop only needs a client with `.messages.cr
 ## Layout
 
 ```
-src/oncoct/      io, context, detect, segment, measure, classify, report, agent
+src/oncoct/      io, context, detect, segment, measure, classify, labels, report, agent
 eval/            LUNA16 FROC (official script, ported), Dice
 scripts/         run_pipeline, run_agent, training and eval scripts
 tests/           coordinates, RECIST, quality flags, traceability, agent loop
@@ -109,5 +113,6 @@ results/agent/   the agent's report and its tool call trace
 | LIDC-IDRI | malignancy labels via pylidc | CC BY 3.0 |
 
 Code is Apache-2.0. Built on TotalSegmentator, MONAI, MedSAM2 and nnU-Net, each under its own
-licence. MedSAM2 weights are research and education only; VISTA3D (Apache-2.0) is the open
-fallback.
+licence. MedSAM2 weights are research and education only, which is why VISTA3D (Apache-2.0) is
+wired as the intended open fallback. That fallback is not implemented yet, so today the only
+working segmenter carries the research-only weight licence.

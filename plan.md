@@ -75,10 +75,10 @@ no API key and no GPU.
 
 | # | Stage | Tool | Trained here? |
 |---|-------|------|---------------|
-| 1 | Ingest | SimpleITK, resample to 0.703 x 0.703 x 1.25 mm, HU preserved | no |
-| 2 | Organ context | TotalSegmentator (117 structures) | no, pretrained |
+| 1 | Ingest | SimpleITK, LUNA16 `.mhd`, resample to 0.703 x 0.703 x 1.25 mm, HU preserved | no |
+| 2 | Organ context | TotalSegmentator (117 classes, 79 present in this scan) | no, pretrained |
 | 3 | Detection | MONAI `lung_nodule_ct_detection` (3D RetinaNet) | no, pretrained |
-| 4 | Segmentation | MedSAM2, box to 3D mask (VISTA3D as fallback) | no, pretrained |
+| 4 | Segmentation | MedSAM2, box to 3D mask, run in an isolated env via a subprocess worker | no, pretrained |
 | 5 | Measurement | RECIST 1.1 long and short axis, volume | no, rule based |
 | 6 | Organ attribution | mask overlap against the cached organ map | no, rule based |
 | 7 | Malignancy | frozen detector trunk plus a small head, LIDC labels | **yes, the only training** |
@@ -98,11 +98,12 @@ tool calls, and wrote the impression itself.
 | ![lung nodule](docs/img/agent_L1_lung_nodule.png) | ![flagged](docs/img/agent_L2_flagged_outside_lung.png) |
 | **L1**: 5.67 mm, 113.09 mm3, lung / upper lobe left, malignancy 0.0002 | **L2**: 14.15 mm, attributed to background, flagged `outside_lung_parenchyma` |
 
-The right hand case is the one I would point at. The detector fired on something in the chest
-wall, outside the lung. Organ attribution caught it, the quality flag surfaced it, and it
-reached the report labelled as a candidate needing review instead of as a lung nodule. The
-0.02 detection threshold is deliberately low, so false positives are expected. What matters
-is that the system says so.
+The right hand case is the one I would point at. The detector was confident about it, score
+0.87 at a 0.5 threshold, so this is not a low-threshold artefact that any reasonable filter
+would have removed. Organ attribution then found the mask overlapped no segmented structure
+at all, so it resolved to `background` and `outside_lung_parenchyma` fired. It reached the
+report as a candidate needing review rather than as a 14 mm lung nodule. A detector on its
+own would have reported it; the independent organ check is what caught it.
 
 All 16 numbers in the agent's impression trace back to recorded tool calls. I re-checked that
 on the laptop against the saved trace rather than trusting the run that produced it. The
@@ -114,7 +115,7 @@ report and its full audit trail are in `results/agent/`.
 millimetres, not voxel indices.
 
 **LIDC-IDRI** (CC BY 3.0) for malignancy labels. LUNA16 itself has no malignancy labels,
-which is a common mistake. Four radiologists rated each nodule 1 to 5. I take the median and
+which is a common mistake. Up to four radiologists rated each nodule 1 to 5. I take the median and
 drop median==3 as ambiguous. That policy removes the hardest cases, so the AUROC is optimistic
 compared to an unfiltered screening population. It is stated here because it changes any
 comparison.
@@ -129,7 +130,7 @@ Two things that fail silently rather than loudly, so both have unit tests:
 
 ## 7. Compute
 
-About 6 hours of A100 total, across four rounds, plus a laptop. There is no from scratch
+About 6 hours of A100 total, across three GPU rounds, plus a laptop. There is no from scratch
 training, so this was comfortable. The malignancy head trains on cached frozen features in
 seconds because the encoder never changes.
 
@@ -148,6 +149,15 @@ own environment through a subprocess worker rather than being forced into one en
 
 ## 9. Honest limitations
 
+- **VISTA3D is scaffolded, not implemented.** `build_segmenter` wires it as the Apache
+  licensed fallback and it implements the shared segmenter interface, but its `segment()`
+  raises `NotImplementedError`. MedSAM2 is the only working segmenter, so the licence
+  fallback is a design affordance rather than a tested path.
+- **Input is LUNA16 `.mhd` only.** `read_mhd` is implemented; `dicom_series_to_nifti` is a
+  stub. A real DICOM series will not run through this today.
+- `scripts/download_data.py`, `scripts/preprocess_luna16.py` and `scripts/seed_weights.py`
+  are argument-parsing stubs that raise with instructions. Nothing in the pipeline calls
+  them; data acquisition was done inside Colab.
 - The malignancy AUROC is optimistic because median==3 nodules are dropped.
 - Segmentation Dice is measured on 15 lesions, which is a small sample.
 - The detection number comes from a pretrained bundle evaluated on its own validation fold.
@@ -159,7 +169,7 @@ own environment through a subprocess worker rather than being forced into one en
 ## 10. Layout
 
 ```
-src/oncoct/      io, context, detect, segment, measure, classify, report, agent
+src/oncoct/      io, context, detect, segment, measure, classify, labels, report, agent
 eval/            LUNA16 FROC (official script, ported), Dice
 scripts/         run_pipeline (deterministic), run_agent (LLM driven), training, eval
 tests/           coordinates, RECIST, quality flags, traceability, the agent loop
