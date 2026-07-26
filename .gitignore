@@ -9,6 +9,9 @@ artifacts/
 *.pt
 *.pth
 *.ckpt
+# ...except the one model this project actually trained. 152 KB, and without it the
+# malignancy stage cannot run from a fresh clone.
+!results/weights/malignancy_head.pt
 
 # Python
 __pycache__/
