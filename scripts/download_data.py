@@ -1,6 +1,6 @@
 """Download datasets: LUNA16, MSD Task06_Lung, and LIDC-IDRI (for malignancy labels).
 
-LUNA16 raw is ~120GB — plan storage. LIDC DICOM+XML is fetched separately for pylidc.
+LUNA16 raw is ~120GB - plan storage. LIDC DICOM+XML is fetched separately for pylidc.
 
     python scripts/download_data.py --dataset luna16    --out data/luna16
     python scripts/download_data.py --dataset msd_task06 --out data/Task06_Lung

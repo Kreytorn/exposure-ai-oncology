@@ -1,12 +1,12 @@
 """Run the LLM orchestration agent on one study and write the report + its audit trail.
 
-The agentic counterpart to `run_pipeline.py`. Same imaging plane, same StudyReport — the
+The agentic counterpart to `run_pipeline.py`. Same imaging plane, same StudyReport - the
 difference is who decides the call order: here an LLM does, through the typed tools in
 `oncoct.agent.tools`, and the run is rejected unless every number in the report traces to a
 tool call it actually made.
 
 The trace is written alongside the report on purpose. "Every number is grounded" is the
-project's central claim, and a claim you cannot audit after the fact is a slogan — the trace
+project's central claim, and a claim you cannot audit after the fact is a slogan - the trace
 is the evidence, one entry per tool call, with the ids the report cites.
 
     ANTHROPIC_API_KEY=... python scripts/run_agent.py --series <scan.mhd> --out results
@@ -59,13 +59,13 @@ def main() -> int:
         report = run(args.series, config, executor=executor)
     except BaseException as exc:
         # Record WHY, then re-raise. Round 4's agent job stopped after 8 tool calls and the
-        # trace showed only that it stopped — the reason lived in Colab stdout that was gone
+        # trace showed only that it stopped - the reason lived in Colab stdout that was gone
         # by the time anyone looked. A trace that cannot explain its own failure is half an
         # audit trail, and this is the half you need when something goes wrong.
         failure = {"type": type(exc).__name__, "message": str(exc)[:2000]}
         raise
     finally:
-        # Write the trace even on failure — a rejected run is exactly when you want to see
+        # Write the trace even on failure - a rejected run is exactly when you want to see
         # which tool calls were made and what the agent tried to claim from them.
         trace_dir = out_dir / "agent"
         trace_dir.mkdir(parents=True, exist_ok=True)
@@ -96,7 +96,7 @@ def main() -> int:
     (out_dir / "agent" / f"{report.study_uid}_report.json").write_text(
         report.model_dump_json(indent=2), encoding="utf-8"
     )
-    print(f"\nAgent run OK — {len(executor.trace)} tool calls, {len(report.findings)} findings.")
+    print(f"\nAgent run OK - {len(executor.trace)} tool calls, {len(report.findings)} findings.")
     print(f"  report  {out_dir / 'agent' / (report.study_uid + '_report.json')}")
     print(f"  trace   {out_dir / 'agent' / (Path(args.series).stem + '_trace.json')}")
     print(f"  impression: {report.impression}")

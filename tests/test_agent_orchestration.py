@@ -2,7 +2,7 @@
 
 `test_agent_no_unsourced_numbers.py` pins the contract on a hand-built report. These tests
 pin it on the real loop: a scripted model drives `ToolExecutor`, the report is assembled from
-the recorded trace, and `verify_traceability` runs on the result — including the impression,
+the recorded trace, and `verify_traceability` runs on the result - including the impression,
 which is the one part of the report the model writes in its own words and therefore the one
 place a number can enter without passing through a tool.
 
@@ -87,8 +87,8 @@ class FakeExecutor(ToolExecutor):
 
     Only the four stages that need monai/SimpleITK/torch are overridden. `measure`,
     `attribute_organ` and `assemble_report` run the REAL implementations, so the wiring
-    under test — that each number reaches the report tagged with the id of the call that
-    produced it — is the production wiring.
+    under test - that each number reaches the report tagged with the id of the call that
+    produced it - is the production wiring.
     """
 
     def __init__(self, config=CONFIG, malignancy=(0.73, 0.66)):
@@ -175,7 +175,7 @@ def test_loop_produces_a_fully_sourced_report():
     assert lesion.organ == "lung"
     assert lesion.lobe_or_segment == "upper lobe, left"
     # Every numeric field cites a real tool call, and the measure/classify ids are distinct
-    # calls — not one blanket source stamped over everything.
+    # calls - not one blanket source stamped over everything.
     assert lesion.long_axis_mm.source in executor.trace
     assert lesion.malignancy_score.source in executor.trace
     assert lesion.long_axis_mm.source != lesion.malignancy_score.source
@@ -232,7 +232,7 @@ def test_rounded_restatement_of_a_real_measurement_is_accepted():
 
 
 def test_lesion_handles_are_not_read_as_measurements():
-    """ "L1" must not trip the numeric guard — it is a handle, not a number."""
+    """ "L1" must not trip the numeric guard - it is a handle, not a number."""
     report = run(
         "scan.mhd",
         CONFIG,
@@ -294,7 +294,7 @@ def test_ending_without_assembling_is_a_hard_failure():
 
 
 def test_tool_error_is_handed_back_to_the_model_not_raised():
-    """A bad call order is recoverable — the agent must get the message and adapt."""
+    """A bad call order is recoverable - the agent must get the message and adapt."""
     bad_then_good = [
         _Response(
             content=[_ToolUse(name="measure", input={"lesion_id": "L9"}, id="toolu_bad")],

@@ -1,6 +1,6 @@
 """Gemini adapter presenting the Anthropic Messages interface the orchestrator expects.
 
-`orchestrator.run()` takes an injectable `client` — the seam that lets the tests drive the
+`orchestrator.run()` takes an injectable `client` - the seam that lets the tests drive the
 loop with a scripted model. The same seam makes the provider swappable: anything exposing
 `.messages.create(model=, max_tokens=, system=, tools=, messages=)` and returning an object
 with `.content` (blocks) and `.stop_reason` can drive the pipeline. Nothing in the loop, the
@@ -40,7 +40,7 @@ API_ROOT = "https://generativelanguage.googleapis.com/v1beta/models"
 # verified against. Override per call or via ONCOCT_GEMINI_MODEL.
 DEFAULT_MODEL = "gemini-flash-latest"
 
-# Free-tier quota is `GenerateRequestsPerDayPerProjectPerModel` — 20 requests per day, and
+# Free-tier quota is `GenerateRequestsPerDayPerProjectPerModel` - 20 requests per day, and
 # critically it is scoped PER MODEL. One study is ~9 round trips, so two studies exhaust a
 # model for the rest of the day; that is exactly how Round 4's agent job died. Rolling over
 # to the next model is therefore a real recovery and not a retry dressed up as one: backoff
@@ -60,7 +60,7 @@ class Block:
     `raw` keeps the original Gemini part so a model turn can be replayed byte-for-byte.
     That is not an optimization: Gemini rejects a replayed `functionCall` that has lost its
     `thoughtSignature` ("Function call is missing a thought_signature", HTTP 400), and
-    reconstructing parts from the fields we happen to model would drop any such metadata —
+    reconstructing parts from the fields we happen to model would drop any such metadata -
     including fields added after this was written.
     """
 
@@ -193,7 +193,7 @@ class GeminiClient:
             try:
                 return self._post_one(candidate, body)
             except _DailyQuotaExhausted as e:
-                # Not retryable in any amount of time short of tomorrow — take the model out
+                # Not retryable in any amount of time short of tomorrow - take the model out
                 # of rotation for this session and try the next one's separate budget.
                 self._exhausted.add(candidate)
                 last = str(e)
@@ -219,7 +219,7 @@ class GeminiClient:
                     self.model_in_use = model
                     return json.loads(r.read())
             except urllib.error.HTTPError as e:
-                # Parse the FULL body — the quota id lives in `details`, which sits after a
+                # Parse the FULL body - the quota id lives in `details`, which sits after a
                 # ~250-char message. Truncating before parsing silently hides it and sends a
                 # per-day cap down the retry path, where no amount of waiting can help.
                 body_text = e.read().decode()
@@ -256,7 +256,7 @@ class GeminiClient:
             for block in content:
                 btype = block.type if isinstance(block, Block) else block.get("type")
                 # Replay a model turn exactly as it arrived. Anything we rebuild by hand
-                # loses metadata Gemini requires back (thoughtSignature) — see Block.raw.
+                # loses metadata Gemini requires back (thoughtSignature) - see Block.raw.
                 if role == "model" and isinstance(block, Block) and block.raw is not None:
                     parts.append(block.raw)
                     if block.type == "tool_use" and block.id:

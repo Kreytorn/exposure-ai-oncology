@@ -1,6 +1,6 @@
 """Run the detector over a folder of LUNA16 .mhd scans and emit a world-coord preds CSV.
 
-This is the input to the FROC evaluation. Detections are kept at a LOW score threshold —
+This is the input to the FROC evaluation. Detections are kept at a LOW score threshold -
 FROC sweeps the whole operating curve, so thresholding at 0.5 here would truncate the
 curve and understate sensitivity at the higher FP/scan operating points.
 
@@ -67,7 +67,7 @@ def main() -> None:
 
     csv_path = out / "preds.csv"
     write_predictions_csv(dets_by_series, geom_by_series, str(csv_path))
-    # Every scan RUN, including any that yielded no candidates — this is the correct
+    # Every scan RUN, including any that yielded no candidates - this is the correct
     # FROC denominator, and preds.csv alone cannot reconstruct it.
     import csv as _csv
     with (out / "evaluated_seriesuids.csv").open("w", newline="") as f:

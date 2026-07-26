@@ -1,6 +1,6 @@
 """Structured report schema (pydantic).
 
-Every numeric field carries a ``source`` — the id of the tool call that produced it.
+Every numeric field carries a ``source`` - the id of the tool call that produced it.
 This is what the traceability guard (tests/test_agent_no_unsourced_numbers.py) checks:
 no number reaches the report without a tool-call provenance.
 """
@@ -35,7 +35,7 @@ class LesionReport(BaseModel):
     malignancy_confidence: float
     recist_category: RecistCategory
     detector_score: float
-    requires_review: bool = True                # candidate — radiologist review
+    requires_review: bool = True                # candidate - radiologist review
     quality_flags: list[str] = Field(default_factory=list)   # e.g. "propagation_drift"
 
 
@@ -50,7 +50,7 @@ class StudyReport(BaseModel):
     )
 
     def all_numeric_sources(self) -> list[str]:
-        """Every tool-call id cited by any numeric field — used by the traceability test."""
+        """Every tool-call id cited by any numeric field - used by the traceability test."""
         srcs: list[str] = []
         for lesion in self.findings:
             srcs += [

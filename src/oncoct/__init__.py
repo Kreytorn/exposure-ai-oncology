@@ -1,4 +1,4 @@
-"""oncoct — autonomous oncology CT pipeline.
+"""oncoct - autonomous oncology CT pipeline.
 
 Two planes (see plan.md):
   - imaging plane: deterministic tool nodes (io, context, detect, segment, measure,

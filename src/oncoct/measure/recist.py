@@ -62,7 +62,7 @@ def measure_lesion(mask_zyx: np.ndarray, spacing_xyz: tuple[float, float, float]
     """
     mask = np.asarray(mask_zyx) > 0
     if not mask.any():
-        raise ValueError("Empty lesion mask — no voxels to measure.")
+        raise ValueError("Empty lesion mask - no voxels to measure.")
 
     sx, sy, sz = spacing_xyz              # ITK (x, y, z)
     spacing_yx = (sy, sx)                 # in-plane, numpy (y, x) order

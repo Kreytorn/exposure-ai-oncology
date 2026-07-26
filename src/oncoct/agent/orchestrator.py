@@ -17,7 +17,7 @@ from oncoct.agent.tools import TOOL_SCHEMAS, ToolError, ToolExecutor
 from oncoct.report.schema import StudyReport
 
 # Anthropic tool-use loop defaults. Claude Opus 5 runs adaptive thinking by default, and
-# max_tokens caps thinking + text together — hence the headroom.
+# max_tokens caps thinking + text together - hence the headroom.
 DEFAULT_MODEL = "claude-opus-5"
 DEFAULT_MAX_TOKENS = 16000
 DEFAULT_MAX_TURNS = 60
@@ -38,7 +38,7 @@ def verify_traceability(report: StudyReport, executor: ToolExecutor) -> None:
 
     The structured fields carry their own provenance, so checking them is a set membership
     test. The **impression is free prose the model authored**, which is the one place a
-    number could enter the report without passing through a tool — so every numeric literal
+    number could enter the report without passing through a tool - so every numeric literal
     in it must also match a value the tools actually returned.
     """
     known = set(executor.trace.keys())
@@ -61,7 +61,7 @@ def _verify_narrative_numbers(report: StudyReport, executor: ToolExecutor) -> No
             raise ValueError(
                 f"Untraceable number in impression: '{literal}' does not match any value "
                 "returned by a tool call. The agent may not state numbers it did not obtain "
-                "from a tool — cite the structured findings instead."
+                "from a tool - cite the structured findings instead."
             )
 
 
@@ -126,7 +126,7 @@ def _load_system_prompt(config: dict) -> str:
 def _build_client(config: dict):
     """Construct the LLM client for the configured backend.
 
-    Both branches import lazily so the agent layer stays importable — and unit-testable —
+    Both branches import lazily so the agent layer stays importable - and unit-testable -
     without either SDK installed. The loop below is provider-agnostic: it only needs
     `.messages.create(...)` returning `.content` blocks and a `.stop_reason`.
     """
@@ -224,7 +224,7 @@ def run(
                         "is_error": True,
                     }
                 )
-        # All results for one assistant turn go back in a SINGLE user message — splitting
+        # All results for one assistant turn go back in a SINGLE user message - splitting
         # them trains the model out of making parallel tool calls.
         messages.append({"role": "user", "content": results})
     else:

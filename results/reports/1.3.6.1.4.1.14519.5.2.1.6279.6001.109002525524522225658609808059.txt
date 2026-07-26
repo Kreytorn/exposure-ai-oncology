@@ -2,25 +2,25 @@ STUDY 1.3.6.1.4.1.14519.5.2.1.6279.6001.109002525524522225658609808059
 4 lesion candidate(s); 2 RECIST target, 2 non-target.
 
 FINDINGS:
-  L1  lung (upper lobe, left) — 15.8 x 14.8 mm, volume 1533 mm^3
+  L1  lung (upper lobe, left) - 15.8 x 14.8 mm, volume 1533 mm^3
         RECIST 1.1: target  |  malignancy 0.74 (confidence 0.17)  |  detector 1.00
         sources: size=measure_L1, volume=measure_L1, malignancy=classify_L1
-  L2  lung (lower lobe, left) — 10.7 x 7.0 mm, volume 164 mm^3
+  L2  lung (lower lobe, left) - 10.7 x 7.0 mm, volume 164 mm^3
         RECIST 1.1: target  |  malignancy 0.00 (confidence 0.96)  |  detector 0.98
         sources: size=measure_L2, volume=measure_L2, malignancy=classify_L2
-  L4  lung (upper lobe, left) — 7.3 x 3.5 mm, volume 130 mm^3
+  L4  lung (upper lobe, left) - 7.3 x 3.5 mm, volume 130 mm^3
         RECIST 1.1: non_target  |  malignancy 0.00 (confidence 0.99)  |  detector 0.80
         sources: size=measure_L4, volume=measure_L4, malignancy=classify_L4
-  L3  lung (upper lobe, left) — 6.3 x 4.2 mm, volume 154 mm^3
+  L3  lung (upper lobe, left) - 6.3 x 4.2 mm, volume 154 mm^3
         RECIST 1.1: non_target  |  malignancy 0.05 (confidence 0.73)  |  detector 0.84
         sources: size=measure_L3, volume=measure_L3, malignancy=classify_L3
 
 RECIST SUMMARY:
   Sum of target-lesion long axes: 26.5 mm (n=2, source=measure_L1;measure_L2)
-  Baseline study — no prior for comparison, so no response category.
+  Baseline study - no prior for comparison, so no response category.
 
 IMPRESSION:
   4 pulmonary nodule candidate(s). Largest: L1, 15.8 mm in lung (upper lobe, left), model malignancy score 0.74.
-  (Deterministic assembly — no LLM narration in this round.)
+  (Deterministic assembly - no LLM narration in this round.)
 
 Research/decision-support output. Not a medical device. All findings are candidates requiring radiologist review.

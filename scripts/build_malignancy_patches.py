@@ -18,7 +18,7 @@ import numpy as np
 import SimpleITK as sitk
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from run_pipeline import _crop_patch  # noqa: E402  — one crop spec for train AND inference
+from run_pipeline import _crop_patch  # noqa: E402  - one crop spec for train AND inference
 
 from oncoct.io.resample import resample_to_spacing, world_to_voxel  # noqa: E402
 from oncoct.labels.lidc_malignancy import patch_pylidc  # noqa: E402
@@ -45,7 +45,7 @@ def _scan_records(series_uid: str):
         if not scores:
             continue
         median = float(np.median(scores))
-        if median == 3.0:                     # ambiguous — dropped, see plan.md §4
+        if median == 3.0:                     # ambiguous - dropped, see plan.md §4
             continue
         c = np.mean([a.centroid for a in cluster], axis=0)
         out.append((_centroid_to_world(c, geom), median, median >= 4.0, len(scores)))
@@ -69,7 +69,7 @@ def process_series(args_tuple):
         reader.SetFileNames(files)
         img = reader.Execute()
         img = sitk.Cast(img, sitk.sitkFloat32)
-        # Identical resample to the inference path — this is what makes the patch spec match.
+        # Identical resample to the inference path - this is what makes the patch spec match.
         img = resample_to_spacing(img, TARGET_SPACING, is_label=False)
         vol = sitk.GetArrayFromImage(img)                       # (z, y, x), HU
         origin = np.array(img.GetOrigin())

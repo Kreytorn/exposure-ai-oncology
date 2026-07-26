@@ -1,6 +1,6 @@
 """Preprocess LUNA16: read .mhd/.raw, resample to isotropic, cache to disk.
 
-Resampling all 888 volumes is the main CPU/RAM cost — cache it, never recompute.
+Resampling all 888 volumes is the main CPU/RAM cost - cache it, never recompute.
 Converts annotation world-coords to voxel indices using each scan's origin/spacing
 (via oncoct.io.resample), preserving HU. Output goes to the cache_root in paths.yaml.
 """

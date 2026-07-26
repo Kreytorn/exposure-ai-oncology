@@ -3,7 +3,7 @@
 This lives in the library rather than in a script because BOTH callers of the imaging
 plane need it: the deterministic driver (`scripts/run_pipeline.py`) and the LLM
 orchestration agent (`oncoct.agent.tools`). Two copies would drift, and a drifting
-segmenter is exactly the kind of silent difference this project cannot afford — the
+segmenter is exactly the kind of silent difference this project cannot afford - the
 agent must call the SAME tools the deterministic pipeline calls, not lookalikes.
 """
 
@@ -33,7 +33,7 @@ def medsam2_launcher() -> list[str]:
 def medsam2_worker_path() -> Path:
     """Absolute path to scripts/medsam2_worker.py.
 
-    The worker is a script, not an installed module, so it cannot be imported — it has to
+    The worker is a script, not an installed module, so it cannot be imported - it has to
     be located on disk. Resolving it relative to this file assumes the editable/src layout
     the project actually uses (`pip install -e .`); ONCOCT_MEDSAM2_WORKER overrides that for
     any layout where it doesn't hold. Raises rather than shelling out to a missing path, so
@@ -55,7 +55,7 @@ class MedSAM2SubprocessClient:
 
     Implements the shared Segmenter interface but runs the actual model in the isolated
     `medsam2` env by shelling out to scripts/medsam2_worker.py. Serializes the volume +
-    prompt to disk (all arrays (z,y,x)), invokes the worker, reads the mask back — this IS
+    prompt to disk (all arrays (z,y,x)), invokes the worker, reads the mask back - this IS
     the cross-env glue so the caller still just does `segmenter.segment(volume, prompt)`.
     """
 

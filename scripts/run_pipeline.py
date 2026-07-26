@@ -1,4 +1,4 @@
-"""End-to-end DETERMINISTIC pipeline driver (Round 1 — no live LLM agent).
+"""End-to-end DETERMINISTIC pipeline driver (Round 1 - no live LLM agent).
 
 Chains the imaging-plane stages in order and feeds the deterministic report assembler:
 
@@ -10,7 +10,7 @@ will later call, in a fixed order, and produces the same StudyReport. The `*_sou
 are stage+lesion tags (e.g. "measure_L1") so verify_traceability passes without a live
 agent trace.
 
-Fill in the stage calls marked `TODO(round1)` — the surrounding orchestration, the
+Fill in the stage calls marked `TODO(round1)` - the surrounding orchestration, the
 record-dict shape for build_study_report, and the traceability tags are already correct.
 
 Usage:
@@ -53,7 +53,7 @@ def run_one(series_path: Path, config: dict, out_dir: Path, cache_dir: Path | No
     img = read_mhd(series_path)                          # SimpleITK image (stub -> implement)
     img = resample_to_spacing(img, spacing_xyz, is_label=False)  # to isotropic (stub -> implement)
     volume_zyx = sitk.GetArrayFromImage(img)            # numpy (z, y, x); HU preserved
-    assert_hounsfield_units(volume_zyx)                 # implemented — do not skip
+    assert_hounsfield_units(volume_zyx)                 # implemented - do not skip
 
     # Persist the RESAMPLED volume so every grid-coupled stage (organ map, segmentation)
     # operates on the SAME grid as detection/measurement. Passing the raw .mhd here would
@@ -149,7 +149,7 @@ def _render_text(report) -> str:
     """Render the StudyReport as an abnormality-first, radiology-style text report.
 
     Every number printed here is copied from a Sourced field, and each finding prints the
-    tool-call id that produced it. Nothing is narrated that a tool did not measure — the
+    tool-call id that produced it. Nothing is narrated that a tool did not measure - the
     same discipline the LLM orchestrator will have to keep in a later round.
     """
     targets = [f for f in report.findings if f.recist_category.value == "target"]
@@ -166,7 +166,7 @@ def _render_text(report) -> str:
     for f in sorted(report.findings, key=lambda r: -r.long_axis_mm.value):
         site = f.organ + (f" ({f.lobe_or_segment})" if f.lobe_or_segment else "")
         lines.append(
-            f"  {f.lesion_id}  {site} — {f.long_axis_mm.value:.1f} x "
+            f"  {f.lesion_id}  {site} - {f.long_axis_mm.value:.1f} x "
             f"{f.short_axis_mm.value:.1f} mm, volume {f.volume_mm3.value:.0f} mm^3"
         )
         lines.append(
@@ -189,7 +189,7 @@ def _render_text(report) -> str:
             f"{report.recist_sum_of_diameters_mm.value:.1f} mm "
             f"(n={len(targets)}, source={report.recist_sum_of_diameters_mm.source})"
         )
-        lines.append("  Baseline study — no prior for comparison, so no response category.")
+        lines.append("  Baseline study - no prior for comparison, so no response category.")
     else:
         lines.append("  No measurable target lesion (all candidates < 10 mm long axis).")
 
@@ -204,11 +204,11 @@ def _render_text(report) -> str:
             f"{' (' + big.lobe_or_segment + ')' if big.lobe_or_segment else ''}, "
             f"model malignancy score {big.malignancy_score.value:.2f}."
         )
-        lines.append("  (Deterministic assembly — no LLM narration in this round.)")
+        lines.append("  (Deterministic assembly - no LLM narration in this round.)")
     else:
         lines.append(
             f"  {len(report.findings)} sub-centimetre nodule candidate(s); none measurable "
-            "as a RECIST target lesion. (Deterministic assembly — no LLM narration.)"
+            "as a RECIST target lesion. (Deterministic assembly - no LLM narration.)"
         )
 
     lines += ["", report.disclaimer]

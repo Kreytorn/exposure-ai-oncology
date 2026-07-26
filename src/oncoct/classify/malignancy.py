@@ -3,11 +3,11 @@
 Two backends (config-selected):
   - cnn_head: freeze a 3D CNN encoder, train a small head on LIDC malignancy labels.
     This is the ONLY model we fine-tune (hours on an A100, frozen encoder).
-  - radiomics_gbm: pyradiomics features + gradient-boosted trees — cheap, interpretable
+  - radiomics_gbm: pyradiomics features + gradient-boosted trees - cheap, interpretable
     baseline that runs on a weak GPU/CPU.
 
 Labels come from LIDC-IDRI (see labels/lidc_malignancy.py), aggregated by median of the
-4 readers with median==3 dropped as ambiguous — a policy that biases the usable set and
+4 readers with median==3 dropped as ambiguous - a policy that biases the usable set and
 must be reported.
 """
 
@@ -59,7 +59,7 @@ def build_encoder(bundle_dir, device: str = "cuda"):
     """Frozen 3D CNN encoder: the detection bundle's LUNA16-pretrained ResNet-50 trunk.
 
     Reusing the detector's backbone means the encoder is already tuned on lung nodules at
-    exactly our spacing — far better than an ImageNet-ish 3D model, and it needs no extra
+    exactly our spacing - far better than an ImageNet-ish 3D model, and it needs no extra
     download. NOTE: the bundle's FPN keeps only `returned_layers=[1, 2]`, so the checkpoint
     contains conv1/bn1/layer1/layer2 and nothing deeper. We therefore truncate the trunk at
     layer2; going deeper would silently mix in randomly-initialised layer3/layer4 weights.
@@ -95,7 +95,7 @@ def encode(trunk, patches_zyx, device: str = "cuda", batch_size: int = 32):
         for i in range(0, len(arr), batch_size):
             x = torch.from_numpy(normalize_patch(arr[i:i + batch_size]))[:, None].to(device)
             h = trunk(x)
-            # avg captures the general texture, max the focal bright/dense component —
+            # avg captures the general texture, max the focal bright/dense component -
             # concatenating both is a standard, cheap way to keep focal signal a mean loses.
             feats.append(
                 torch.cat([h.mean(dim=(2, 3, 4)), h.amax(dim=(2, 3, 4))], dim=1).float().cpu()
@@ -122,7 +122,7 @@ class MalignancyHead(torch.nn.Module):
 
 def _flip_views(patch_zyx: np.ndarray):
     """The 8 axis-flip views of a patch. Nodule malignancy is flip-invariant, so these are
-    label-preserving — used to augment training and to average at inference (TTA)."""
+    label-preserving - used to augment training and to average at inference (TTA)."""
     for fz in (False, True):
         for fy in (False, True):
             for fx in (False, True):
@@ -188,7 +188,7 @@ class MalignancyClassifier:
             score = float(torch.sigmoid(logits).mean().item())
 
         # Confidence = 1 - normalized binary entropy: 0 at p=0.5 (model abstaining), 1 at a
-        # saturated call. It is a sharpness measure, NOT a calibrated reliability estimate —
+        # saturated call. It is a sharpness measure, NOT a calibrated reliability estimate -
         # with n=196 training nodules there is not enough data to calibrate honestly.
         p = min(max(score, 1e-6), 1 - 1e-6)
         entropy = -(p * np.log(p) + (1 - p) * np.log(1 - p)) / np.log(2.0)

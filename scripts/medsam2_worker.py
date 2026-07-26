@@ -1,4 +1,4 @@
-"""MedSAM2 subprocess worker — runs INSIDE the `medsam2` conda env.
+"""MedSAM2 subprocess worker - runs INSIDE the `medsam2` conda env.
 
 The primary `oncoct` env cannot import `sam2` (hard torch/CUDA version pin), so it shells
 out to this worker. Cross-env contract (all arrays in numpy (z, y, x) order to avoid the
@@ -32,7 +32,7 @@ MODEL_IMAGE_SIZE = 512
 
 # Propagation is limited to a slab centred on the key slice. A lung nodule is at most a few
 # cm, so tracking to both ends of a 300-slice chest CT only buys propagation drift and
-# wasted compute. 48 slices at 1.25 mm = 60 mm each way — far beyond any lung nodule.
+# wasted compute. 48 slices at 1.25 mm = 60 mm each way - far beyond any lung nodule.
 DEFAULT_Z_MARGIN = 48
 
 
@@ -66,7 +66,7 @@ def _preprocess(volume_zyx: np.ndarray, hu_window) -> np.ndarray:
 
 
 def _largest_connected_component(mask: np.ndarray) -> np.ndarray:
-    """Keep only the biggest 3D blob — drops propagation spill into neighbouring structures."""
+    """Keep only the biggest 3D blob - drops propagation spill into neighbouring structures."""
     from skimage import measure
 
     if mask.max() == 0:
@@ -123,7 +123,7 @@ def main() -> None:
     with torch.inference_mode(), torch.autocast("cuda", dtype=autocast_dtype, enabled=torch.cuda.is_available()):
         state = predictor.init_state(images, height, width)
         # The box sits on ONE key slice; propagate_in_video only walks one way per call, so
-        # the reverse pass is mandatory — without it the lesion is segmented only on the
+        # the reverse pass is mandatory - without it the lesion is segmented only on the
         # superior side of the prompt (brief §7.3).
         for reverse in (False, True):
             predictor.add_new_points_or_box(
@@ -137,7 +137,7 @@ def main() -> None:
 
     seg = _largest_connected_component(seg)
 
-    # Back onto the full input grid — the caller measures at the volume's spacing, so the
+    # Back onto the full input grid - the caller measures at the volume's spacing, so the
     # mask must share the volume's shape exactly (brief §7.7).
     mask = np.zeros(volume.shape, dtype=np.uint8)
     mask[z_lo:z_hi] = seg

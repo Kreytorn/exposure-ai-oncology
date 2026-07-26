@@ -1,4 +1,4 @@
-"""Guards on the lesion quality flags — specifically that `propagation_drift` stays useful.
+"""Guards on the lesion quality flags - specifically that `propagation_drift` stays useful.
 
 Round 1 shipped a drift test ("end slice > 50% of the peak slice") that fired on 5/6 lesions,
 was judged worse than no flag, and was replaced by a physical z-extent test. The replacement was

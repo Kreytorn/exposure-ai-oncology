@@ -49,7 +49,7 @@ def compute_organ_map(volume_path: Path, cache_dir: Path, fast: bool = False) ->
 
     # GRID CONTRACT (brief §5.2): attribute_organ does organ_map[lesion_mask], so the organ
     # map must sit on exactly the volume's grid. TotalSegmentator resamples internally
-    # (1.5 mm for `total`) and normally restores the input geometry — but if any version
+    # (1.5 mm for `total`) and normally restores the input geometry - but if any version
     # hands back a different grid, resample here rather than let a silent mismatch through.
     same_grid = (
         seg.GetSize() == ref.GetSize()
@@ -100,7 +100,7 @@ def split_organ_lobe(attributed: str) -> tuple[str, str | None]:
 
     `attribute_organ` returns TotalSegmentator's own name, which for lungs is already
     lobe-level ("lung_lower_lobe_left"). The report wants the organ and the sub-segment
-    separately, so split rather than throw the lobe away — lobe is clinically the useful
+    separately, so split rather than throw the lobe away - lobe is clinically the useful
     half, and it came from a segmentation, not from the model guessing.
     """
     if attributed.startswith("lung_") and "lobe" in attributed:
@@ -115,7 +115,7 @@ def label_to_name() -> dict[int, str]:
     """TotalSegmentator label-index -> organ-name mapping.
 
     The `class_map` layout is VERSION-DEPENDENT (task-keyed dict vs flat dict). We try the
-    common accessors and fall back to an empty map — `attribute_organ` already degrades to
+    common accessors and fall back to an empty map - `attribute_organ` already degrades to
     `label_{n}` names, so a bad accessor must NOT hard-abort the run. Verify at runtime with
     `from totalsegmentator.map_to_binary import class_map; class_map.keys()`.
     """

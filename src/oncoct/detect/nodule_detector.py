@@ -18,7 +18,7 @@ from pathlib import Path
 import numpy as np
 
 # The bundle's own intensity window (configs/inference.json::ScaleIntensityRanged). This is
-# NOT the pipeline's hu_window [-1000, 400] — that one belongs to MedSAM2/the classifier.
+# NOT the pipeline's hu_window [-1000, 400] - that one belongs to MedSAM2/the classifier.
 # Feeding the detector a different window silently degrades it, so it is pinned here.
 _DETECTOR_HU_WINDOW = (-1024.0, 300.0)
 _BUNDLE_SPACING_XYZ = (0.703125, 0.703125, 1.25)
@@ -54,7 +54,7 @@ def _build_detector(bundle_dir: Path, device: str):
 
     Parsing the shipped config (rather than re-declaring the architecture here) keeps the
     backbone, anchor shapes, box-selector thresholds and sliding-window settings exactly as
-    published — a hand-transcribed anchor shape would degrade detection silently.
+    published - a hand-transcribed anchor shape would degrade detection silently.
     """
     import torch
     from monai.bundle import ConfigParser
@@ -144,7 +144,7 @@ def detect_nodules(
     if not np.allclose(spacing, _BUNDLE_SPACING_XYZ, atol=1e-3):
         raise ValueError(
             f"Detector expects spacing {_BUNDLE_SPACING_XYZ} mm (x, y, z), got "
-            f"{tuple(spacing)}. Resample first — a spacing mismatch degrades detection "
+            f"{tuple(spacing)}. Resample first - a spacing mismatch degrades detection "
             "silently rather than erroring (see brief §7.4)."
         )
 

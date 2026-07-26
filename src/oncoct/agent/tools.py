@@ -19,7 +19,7 @@ Two design rules make the traceability invariant hold at runtime rather than by 
    produced it. That is what `verify_traceability` then re-checks.
 
 Heavy imaging dependencies (monai, SimpleITK, TotalSegmentator, torch) are imported inside
-the handlers, not at module scope, so the agent layer stays importable — and unit-testable —
+the handlers, not at module scope, so the agent layer stays importable - and unit-testable -
 in an environment that has none of them installed.
 """
 
@@ -130,7 +130,7 @@ class ToolError(RuntimeError):
     """A tool was called out of order or with an unknown handle.
 
     Raised (rather than returned) so the orchestrator can surface it to the model as an
-    `is_error` tool_result — the agent is expected to read the message and recover, e.g. by
+    `is_error` tool_result - the agent is expected to read the message and recover, e.g. by
     calling `ingest` before `detect_nodules`.
     """
 
@@ -148,7 +148,7 @@ class ToolExecutor:
         cache_dir: Path | None = None,
         out_dir: Path | None = None,
     ):
-        # `config` stays optional so a bare ToolExecutor() is still a usable trace holder —
+        # `config` stays optional so a bare ToolExecutor() is still a usable trace holder -
         # the traceability guard and its tests only ever read `.trace`, and requiring a full
         # pipeline config to construct one would couple that check to the imaging config.
         self.config = config if config is not None else {}
@@ -185,7 +185,7 @@ class ToolExecutor:
 
     def _require_study(self, study_uid: str | None = None):
         if self.study_uid is None:
-            raise ToolError("No study loaded — call ingest(study_path) first.")
+            raise ToolError("No study loaded - call ingest(study_path) first.")
         if study_uid is not None and study_uid != self.study_uid:
             raise ToolError(
                 f"Unknown study_uid {study_uid!r}; this session holds {self.study_uid!r}."
@@ -295,7 +295,7 @@ class ToolExecutor:
         self._require_study(study_uid)
         det = self._detections.get(detection_id)
         if det is None:
-            known = ", ".join(self._detections) or "none — call detect_nodules first"
+            known = ", ".join(self._detections) or "none - call detect_nodules first"
             raise ToolError(f"Unknown detection_id {detection_id!r}. Detections: {known}.")
         if self._segmenter is None:
             self._segmenter = build_segmenter(self.config, self.cache_dir)
@@ -340,7 +340,7 @@ class ToolExecutor:
 
         lesion = self._require_lesion(lesion_id)
         if self._organ_map is None:
-            raise ToolError("No organ map — call organ_context(study_uid) first.")
+            raise ToolError("No organ map - call organ_context(study_uid) first.")
         organ, fractions = attribute_organ(lesion["mask"], self._organ_map, self._label_to_name)
         organ_name, lobe = split_organ_lobe(organ)
         lesion["organ"] = organ_name
@@ -360,7 +360,7 @@ class ToolExecutor:
         lesion = self._require_lesion(lesion_id)
         if "measurement" not in lesion:
             raise ToolError(
-                f"Call measure({lesion_id!r}) first — the patch is cropped at its centroid."
+                f"Call measure({lesion_id!r}) first - the patch is cropped at its centroid."
             )
         if self._classifier is None:
             self._classifier = MalignancyClassifier(
@@ -388,7 +388,7 @@ class ToolExecutor:
         self._require_study(study_uid)
         if not lesion_ids:
             raise ToolError(
-                "lesion_ids is empty — a study with no lesions still needs an explicit list."
+                "lesion_ids is empty - a study with no lesions still needs an explicit list."
             )
 
         records = []

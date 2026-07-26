@@ -26,7 +26,7 @@ classify:
   backend: cnn_head                                # {cnn_head, radiomics_gbm}
   malignancy_label_policy:
     aggregate: median                              # of 4 LIDC readers
-    drop_ambiguous_median_3: true                  # documented bias — see plan.md §4
+    drop_ambiguous_median_3: true                  # documented bias - see plan.md §4
 
 report:
   llm: gemini                                      # {claude, gemini}

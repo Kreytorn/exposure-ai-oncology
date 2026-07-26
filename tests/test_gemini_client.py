@@ -1,6 +1,6 @@
 """Shape translation between the Anthropic Messages interface and Gemini's REST API.
 
-The orchestrator is provider-agnostic — it only needs `.content` blocks and a `.stop_reason`.
+The orchestrator is provider-agnostic - it only needs `.content` blocks and a `.stop_reason`.
 These tests pin the translation in both directions against payloads captured from the live
 v1beta API, so a provider swap cannot silently change what the loop sees. No network.
 """
@@ -138,7 +138,7 @@ def test_text_only_turn_is_end_turn():
 
 
 def test_missing_call_id_is_synthesized():
-    """The trace and the report's provenance are keyed on the id — it cannot be None."""
+    """The trace and the report's provenance are keyed on the id - it cannot be None."""
     r = _client()._to_response(_payload([{"functionCall": {"name": "measure", "args": {}}}]))
     assert r.content[0].id
     assert r.content[0].type == "tool_use"
@@ -206,7 +206,7 @@ def test_daily_cap_is_distinguished_from_a_per_minute_limit():
 
     The full body must be parsed: the quota id lives in `details`, after a ~300-char message.
     Truncating first (as an early version did) hides it and sends a daily cap down the retry
-    path, where no amount of waiting can help — which is what broke Round 4's agent job.
+    path, where no amount of waiting can help - which is what broke Round 4's agent job.
     """
     from oncoct.agent.gemini_client import _is_daily_quota
 

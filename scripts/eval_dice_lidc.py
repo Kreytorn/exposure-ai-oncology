@@ -5,7 +5,7 @@ MSD Task06 could, but it is a separate ~9 GB download. LIDC-IDRI already gives u
 need: the 4 readers' contours, from which pylidc builds a consensus mask.
 
 Everything happens in the grid derived from ONE SimpleITK read of the DICOM series, then
-resampled once — so prediction and ground truth share geometry by construction rather than
+resampled once - so prediction and ground truth share geometry by construction rather than
 by assumption. Per lesion we crop a slab around the nodule so Dice measures the lesion, not
 the surrounding empty chest.
 

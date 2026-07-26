@@ -4,13 +4,13 @@ Coordinate conventions (read this before touching anything):
   - WORLD coordinates: physical millimetres, order (x, y, z), as stored in LUNA16
     annotations.csv / candidates_V2.csv and as returned by SimpleITK.
   - VOXEL indices in ITK order: (i, j, k) == (x, y, z).
-  - VOXEL indices in NUMPY order: (k, j, i) == (z, y, x) — because a SimpleITK image
+  - VOXEL indices in NUMPY order: (k, j, i) == (z, y, x) - because a SimpleITK image
     read into numpy via GetArrayFromImage is indexed [z, y, x].
 
 The world<->voxel maths below is deliberately pure (no I/O) so it is exhaustively
 unit-tested. `world_to_voxel` / `voxel_to_world` operate in ITK (x, y, z) order;
 use `itk_to_numpy_index` / `numpy_to_itk_index` at the numpy boundary. Getting this
-wrong is the classic LUNA16 bug — hence the round-trip test.
+wrong is the classic LUNA16 bug - hence the round-trip test.
 """
 
 from __future__ import annotations
@@ -94,8 +94,8 @@ def resample_to_spacing(
     dst_size = np.maximum(np.round(src_size * src_spacing / dst_spacing), 1).astype(int)
 
     # Resample into an IDENTITY-direction frame. world_to_voxel/voxel_to_world ignore the
-    # direction matrix, so any flipped LUNA16 scan must be straightened HERE — before any
-    # world->voxel conversion — or the annotation indices are silently wrong (see brief §7.1).
+    # direction matrix, so any flipped LUNA16 scan must be straightened HERE - before any
+    # world->voxel conversion - or the annotation indices are silently wrong (see brief §7.1).
     direction = np.asarray(image.GetDirection(), dtype=np.float64).reshape(3, 3)
     origin = np.asarray(image.GetOrigin(), dtype=np.float64)
     # Keep the same physical corner: the far corner in the source frame becomes the new

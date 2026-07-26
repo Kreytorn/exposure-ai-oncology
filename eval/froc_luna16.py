@@ -1,6 +1,6 @@
 """LUNA16 FROC / CPM evaluation wrapper.
 
-Wraps the OFFICIAL noduleCADEvaluation script — rolling your own FROC inflates CPM.
+Wraps the OFFICIAL noduleCADEvaluation script - rolling your own FROC inflates CPM.
 CPM = mean sensitivity at {1/8, 1/4, 1/2, 1, 2, 4, 8} FP/scan, with 95% CI via
 bootstrapping. Respect the 10-fold subset boundaries; treat "irrelevant findings"
 (<3mm, non-nodule, 1-2 reader agreement) as ignored (neither TP nor FP).
@@ -29,7 +29,7 @@ def write_predictions_csv(
     """Emit LUNA16-format predictions CSV: seriesuid,coordX,coordY,coordZ,probability (WORLD mm).
 
     The detector returns centers in numpy (z, y, x) VOXEL space. LUNA16 evaluation expects
-    WORLD-mm (x, y, z). We flip axis order (numpy_to_itk_index) BEFORE voxel_to_world — this
+    WORLD-mm (x, y, z). We flip axis order (numpy_to_itk_index) BEFORE voxel_to_world - this
     is the exact seam where the classic axis bug reappears, so it is done explicitly here.
     IMPORTANT: origin/spacing must be for the SAME grid the detector ran on (the resampled
     isotropic grid if detection ran post-resample).
@@ -55,7 +55,7 @@ def evaluate_froc(
     """Return {'cpm': float, 'sensitivities': {fp_rate: sens}, 'ci95': (lo, hi)}.
 
     Wraps the OFFICIAL LUNA16 noduleCADEvaluation. `excluded_csv` is the irrelevant-findings
-    set (annotations_excluded.csv) — required for a correct CPM; do not omit it.
+    set (annotations_excluded.csv) - required for a correct CPM; do not omit it.
     """
     import sys
 
@@ -68,7 +68,7 @@ def evaluate_froc(
         raise FileNotFoundError(
             f"Official LUNA16 evaluation script not found at {official}. Copy "
             "evaluationScript/{noduleCADEvaluationLUNA16.py,NoduleFinding.py,tools} there. "
-            "It ships as Python 2 — see eval/README_froc.md for the port."
+            "It ships as Python 2 - see eval/README_froc.md for the port."
         )
     sys.path.insert(0, str(official))
     import noduleCADEvaluationLUNA16 as luna  # noqa: E402
@@ -81,7 +81,7 @@ def evaluate_froc(
     # denominator up and sensitivity down. So evaluate against exactly the scans we ran.
     if series_uids_csv:
         # Preferred: the list of scans the detector actually RAN. A scan that produced zero
-        # candidates still belongs in the denominator — dropping it would shrink the FP/scan
+        # candidates still belongs in the denominator - dropping it would shrink the FP/scan
         # divisor and, if it held nodules, silently hide those misses.
         with Path(series_uids_csv).open() as f:
             evaluated = sorted({r[0].strip() for r in csv.reader(f) if r and r[0].strip()})
@@ -120,7 +120,7 @@ def evaluate_froc(
         ci95 = (lo, hi)
 
     # Count the INCLUDED nodules only. `all_nodules` also carries the excluded/irrelevant
-    # findings (<3 mm, non-nodule, 1-2 reader agreement), which are ignored by the metric —
+    # findings (<3 mm, non-nodule, 1-2 reader agreement), which are ignored by the metric -
     # reporting their total would overstate the evaluated nodule count by ~30x.
     with Path(annotations_csv).open() as f:
         included = sum(1 for r in csv.DictReader(f) if r["seriesuid"] in set(evaluated))

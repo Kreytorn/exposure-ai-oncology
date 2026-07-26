@@ -22,7 +22,7 @@ def dicom_series_to_nifti(dicom_dir: Path, out_path: Path):
 def read_mhd(mhd_path: Path):
     """Read a LUNA16 .mhd/.raw MetaImage. Returns a SimpleITK.Image.
 
-    Origin/spacing/direction come from the .mhd header — pass them to the coordinate
+    Origin/spacing/direction come from the .mhd header - pass them to the coordinate
     conversions in resample.py. Do not assume 1mm isotropic; LUNA16 spacing varies.
     """
     import SimpleITK as sitk
@@ -36,7 +36,7 @@ def read_mhd(mhd_path: Path):
     if image.GetDimension() != 3:
         raise ValueError(f"Expected a 3D volume, got {image.GetDimension()}D: {mhd_path}")
     # Cast to float32 so later interpolation isn't clamped to the int16 storage type.
-    # HU are preserved exactly (no rescale applied) — assert_hounsfield_units still holds.
+    # HU are preserved exactly (no rescale applied) - assert_hounsfield_units still holds.
     return sitk.Cast(image, sitk.sitkFloat32)
 
 
@@ -54,5 +54,5 @@ def assert_hounsfield_units(volume, tolerance_frac: float = 0.01) -> None:
     if hi - lo < 100:  # normalized data would have a tiny range
         raise ValueError(
             f"Volume range [{lo:.3f}, {hi:.3f}] does not look like Hounsfield units. "
-            "Downstream pretrained models require raw HU — do not pre-normalize CT."
+            "Downstream pretrained models require raw HU - do not pre-normalize CT."
         )

@@ -2,7 +2,7 @@
 
 Freezes a 3D CNN encoder and trains a small head on LIDC malignancy labels
 (median-of-4, drop median==3), joined to LUNA16 scans by SeriesInstanceUID. Designed
-for a short A100 run (minutes to ~1-2h). Checkpoints frequently — Colab sessions die.
+for a short A100 run (minutes to ~1-2h). Checkpoints frequently - Colab sessions die.
 
     python scripts/finetune_malignancy.py --epochs 30 --ckpt artifacts/weights/malignancy
 
@@ -54,7 +54,7 @@ def precompute_features(trunk, patches, device):
 
     The encoder never changes, so its outputs are computed once and reused for every epoch
     and every fold. That turns "train a 3D CNN" into "train a 35k-parameter MLP on cached
-    vectors" — seconds instead of GPU-hours, which is exactly the budget this round has.
+    vectors" - seconds instead of GPU-hours, which is exactly the budget this round has.
     """
     views = np.stack([np.stack(list(_flip_views(p))) for p in patches])   # (N, 8, 48,48,48)
     n, v = views.shape[:2]

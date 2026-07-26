@@ -4,7 +4,7 @@ Imaging-plane logic: pure function of a mask + its measurement + organ attributi
 here rather than in `scripts/run_pipeline.py` so it is importable and unit-testable without the
 heavy runtime stack (see `tests/test_quality_flags.py`).
 
-The agent never computes these — it only transcribes them, like every other tool output.
+The agent never computes these - it only transcribes them, like every other tool output.
 """
 
 from __future__ import annotations

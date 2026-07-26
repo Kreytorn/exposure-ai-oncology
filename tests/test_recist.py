@@ -43,7 +43,7 @@ def test_volume_of_cube():
 
 
 def test_recist_target_threshold_semantics():
-    # long axis >= 10mm is a measurable target lesion (RECIST 1.1) — asserted here so the
+    # long axis >= 10mm is a measurable target lesion (RECIST 1.1) - asserted here so the
     # generator's category rule stays pinned.
     mask = _sphere_mask(8, (40, 48, 48))
     m = measure_lesion(mask, spacing_xyz=(1.0, 1.0, 1.0))

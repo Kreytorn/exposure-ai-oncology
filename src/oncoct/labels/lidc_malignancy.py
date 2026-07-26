@@ -5,7 +5,7 @@ LUNA16 has NO malignancy labels. The parent LIDC-IDRI has 4 radiologists rating 
 4 readers into nodules, aggregate malignancy by MEDIAN, DROP median==3 (ambiguous), and
 join to LUNA16 scans on SeriesInstanceUID.
 
-The drop-median==3 policy shrinks and biases the usable set — it is a stated modelling
+The drop-median==3 policy shrinks and biases the usable set - it is a stated modelling
 choice (plan.md §4), configurable in configs/pipeline.yaml.
 """
 
@@ -66,7 +66,7 @@ def extract_labels(
             median = float(np.median(scores))
             # median == 3 is "indeterminate": the readers neither called it benign nor
             # malignant. Dropping it removes the hardest cases and inflates the reported
-            # AUROC relative to a real screening population — a stated bias, not a bug.
+            # AUROC relative to a real screening population - a stated bias, not a bug.
             if drop_ambiguous_median_3 and median == 3.0:
                 continue
             centroid_ijk = np.mean([a.centroid for a in cluster], axis=0)
@@ -120,7 +120,7 @@ def _centroid_to_world(centroid_ijk, geom) -> tuple[float, float, float]:
     """pylidc (i, j, k) = (row, col, slice) -> world mm (x, y, z).
 
     pylidc indexes `scan.to_volume()` as [row, col, slice] while SimpleITK indexes
-    (col, row, slice) — hence the i/j swap. The slice axis is NOT reversed: validated
+    (col, row, slice) - hence the i/j swap. The slice axis is NOT reversed: validated
     against LUNA16's independent world coordinates, forward ordering matches to a median
     of 0.29 mm while reversed ordering is off by >100 mm.
     """
