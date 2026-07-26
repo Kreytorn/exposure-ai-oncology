@@ -9,6 +9,16 @@ called.** It cannot make one up, and that is enforced by code, not by a prompt.
 
 ## Results
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/img/benchmarks_dark.png">
+  <img alt="Left: the LUNA16 FROC operating curve on subset0, sensitivity against false positives per scan, rising from 0.71 at 1/8 FP per scan to 0.81 at 8, CPM 0.7755 with a 95% CI of 0.66 to 0.87. Right: detection CPM 0.776, segmentation Dice 0.695 and malignancy AUROC 0.876, each drawn as a point estimate with its uncertainty interval." src="docs/img/benchmarks_light.png">
+</picture>
+
+Regenerate with `python scripts/plot_benchmarks.py`. The FROC panel is read directly from
+`results/metrics/froc_subset0.json`, so it cannot drift from the scored run. The Dice and
+AUROC values on the right are constants in that script, taken from the run logs, since those
+two evaluations did not write a metrics file.
+
 | Stage | Metric | Result |
 |-------|--------|--------|
 | Detection | FROC / CPM, LUNA16 subset0, 89 scans | **0.7755** (CI 0.66 to 0.87) |
