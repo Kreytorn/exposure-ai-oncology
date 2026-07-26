@@ -17,6 +17,11 @@ from __future__ import annotations
 
 import numpy as np
 
+# Value written outside the source extent when resampling an intensity volume: air.
+# Shared with io.dicom_nifti, whose HU guard must discount it - a rounded-up output grid
+# gains a pad border, and that border alone can make normalized data look like real HU.
+AIR_FILL_HU = -1024.0
+
 
 def world_to_voxel(
     world_xyz: np.ndarray,
@@ -84,13 +89,14 @@ def resample_to_spacing(
     """
     import SimpleITK as sitk
 
-    src_spacing = np.asarray(image.GetSpacing(), dtype=np.float64)      # (x, y, z)
-    src_size = np.asarray(image.GetSize(), dtype=np.float64)            # (x, y, z)
+    src_spacing = np.asarray(image.GetSpacing(), dtype=np.float64)  # (x, y, z)
+    src_size = np.asarray(image.GetSize(), dtype=np.float64)  # (x, y, z)
     dst_spacing = np.asarray(target_spacing_xyz, dtype=np.float64)
     if np.any(dst_spacing <= 0):
         raise ValueError(f"target_spacing_xyz must be positive, got {target_spacing_xyz}")
 
-    # Physical extent is invariant under resampling: size_new = size_old * spacing_old / spacing_new.
+    # Physical extent is invariant under resampling:
+    # size_new = size_old * spacing_old / spacing_new.
     dst_size = np.maximum(np.round(src_size * src_spacing / dst_spacing), 1).astype(int)
 
     # Resample into an IDENTITY-direction frame. world_to_voxel/voxel_to_world ignore the
@@ -108,9 +114,9 @@ def resample_to_spacing(
     resampler.SetSize([int(v) for v in dst_size])
     resampler.SetOutputDirection([1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0])
     resampler.SetOutputOrigin([float(v) for v in dst_origin])
-    resampler.SetTransform(sitk.Transform())            # identity: pure grid change
+    resampler.SetTransform(sitk.Transform())  # identity: pure grid change
     resampler.SetInterpolator(sitk.sitkNearestNeighbor if is_label else sitk.sitkLinear)
     # Outside the source extent: air for CT (HU are preserved, never normalized), 0 for labels.
-    resampler.SetDefaultPixelValue(0.0 if is_label else -1024.0)
+    resampler.SetDefaultPixelValue(0.0 if is_label else AIR_FILL_HU)
     resampler.SetOutputPixelType(image.GetPixelID())
     return resampler.Execute(image)

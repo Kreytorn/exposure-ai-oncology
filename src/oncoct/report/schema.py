@@ -26,17 +26,20 @@ class Sourced(BaseModel):
 
 class LesionReport(BaseModel):
     lesion_id: str
-    organ: str                                  # from attribute_organ tool
+    organ: str  # from attribute_organ tool
     lobe_or_segment: str | None = None
     long_axis_mm: Sourced
     short_axis_mm: Sourced
     volume_mm3: Sourced
-    malignancy_score: Sourced                   # 0..1
+    malignancy_score: Sourced  # 0..1
     malignancy_confidence: float
     recist_category: RecistCategory
     detector_score: float
-    requires_review: bool = True                # candidate - radiologist review
-    quality_flags: list[str] = Field(default_factory=list)   # e.g. "propagation_drift"
+    requires_review: bool = True  # candidate - radiologist review
+    quality_flags: list[str] = Field(default_factory=list)  # e.g. "propagation_drift"
+    # Why a >=10mm lesion was NOT made a target: a quality flag, or a RECIST 1.1 cap.
+    # None for lesions that are targets, and for lesions too small to qualify at all.
+    recist_exclusion_reason: str | None = None
 
 
 class StudyReport(BaseModel):

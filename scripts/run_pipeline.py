@@ -39,6 +39,7 @@ from oncoct.io.resample import resample_to_spacing
 from oncoct.measure.recist import measure_lesion
 from oncoct.report.generator import build_study_report
 from oncoct.report.quality import quality_flags
+from oncoct.report.text import render_text_report
 from oncoct.segment import LesionPrompt
 from oncoct.segment.factory import build_segmenter
 
@@ -50,10 +51,13 @@ def run_one(series_path: Path, config: dict, out_dir: Path, cache_dir: Path | No
     # 1. INGEST ---------------------------------------------------------------
     import SimpleITK as sitk
 
-    img = read_mhd(series_path)                          # SimpleITK image (stub -> implement)
-    img = resample_to_spacing(img, spacing_xyz, is_label=False)  # to isotropic (stub -> implement)
-    volume_zyx = sitk.GetArrayFromImage(img)            # numpy (z, y, x); HU preserved
-    assert_hounsfield_units(volume_zyx)                 # implemented - do not skip
+    img = read_mhd(series_path)  # SimpleITK image
+    # Validate BEFORE resampling. resample_to_spacing pads outside-extent voxels with a
+    # -1024.0 air constant, so a post-resample check inspects a volume this pipeline has
+    # already widened, and normalized input would pass on the padding alone.
+    assert_hounsfield_units(sitk.GetArrayFromImage(img))
+    img = resample_to_spacing(img, spacing_xyz, is_label=False)  # to isotropic
+    volume_zyx = sitk.GetArrayFromImage(img)  # numpy (z, y, x); HU preserved
 
     # Persist the RESAMPLED volume so every grid-coupled stage (organ map, segmentation)
     # operates on the SAME grid as detection/measurement. Passing the raw .mhd here would
@@ -77,7 +81,7 @@ def run_one(series_path: Path, config: dict, out_dir: Path, cache_dir: Path | No
 
     # 3. DETECT ---------------------------------------------------------------
     thr = config["detect"].get("score_threshold", 0.5)
-    detections = detect_nodules(volume_zyx, spacing_xyz, score_threshold=thr)   # stub -> implement
+    detections = detect_nodules(volume_zyx, spacing_xyz, score_threshold=thr)  # stub -> implement
     # Segmentation costs ~10 s/lesion, so a pathological scan with 100 candidates would
     # stall the study. Detections are score-sorted, so this keeps the most confident ones.
     max_lesions = config["detect"].get("max_lesions_per_study", 10)
@@ -97,13 +101,13 @@ def run_one(series_path: Path, config: dict, out_dir: Path, cache_dir: Path | No
     for i, det in enumerate(detections):
         lid = f"L{i + 1}"
         prompt = LesionPrompt.from_detection(det, vista3d_class=None)
-        mask = segmenter.segment(volume_zyx, prompt)                 # stub -> implement
+        mask = segmenter.segment(volume_zyx, prompt)  # stub -> implement
         if mask.sum() == 0:
             continue
-        m = measure_lesion(mask, spacing_xyz)                        # implemented
-        organ, frac = attribute_organ(mask, organ_map, l2n)          # implemented
-        patch = crop_patch(volume_zyx, m.centroid_zyx, size=48)    # helper below
-        mal = classifier.predict(patch)                             # stub -> implement
+        m = measure_lesion(mask, spacing_xyz)  # implemented
+        organ, frac = attribute_organ(mask, organ_map, l2n)  # implemented
+        patch = crop_patch(volume_zyx, m.centroid_zyx, size=48)  # helper below
+        mal = classifier.predict(patch)  # stub -> implement
         organ_name, lobe = split_organ_lobe(organ)
 
         records.append(
@@ -127,7 +131,7 @@ def run_one(series_path: Path, config: dict, out_dir: Path, cache_dir: Path | No
         overlays.append((lid, m.key_slice_z, np.array(det.bbox_zyx), mask))
 
     # 5. ASSEMBLE + WRITE -----------------------------------------------------
-    report = build_study_report(study_uid, records)                 # implemented
+    report = build_study_report(study_uid, records)  # implemented
     _write_outputs(report, volume_zyx, overlays, study_uid, out_dir)
 
 
@@ -135,84 +139,16 @@ def _write_outputs(report, volume_zyx, overlays, study_uid, out_dir: Path) -> No
     (out_dir / "reports").mkdir(parents=True, exist_ok=True)
     (out_dir / "overlays").mkdir(parents=True, exist_ok=True)
     (out_dir / "reports" / f"{study_uid}.json").write_text(report.model_dump_json(indent=2))
-    (out_dir / "reports" / f"{study_uid}.txt").write_text(_render_text(report))
+    (out_dir / "reports" / f"{study_uid}.txt").write_text(render_text_report(report))
     for lid, key_z, bbox_zyx, mask in overlays:
         # bbox_zyx = ((z0,z1),(y0,y1),(x0,x1)) in resampled-voxel space; slice is the same grid.
         (y0, y1), (x0, x1) = bbox_zyx[1], bbox_zyx[2]
         _save_overlay(
-            volume_zyx[key_z], mask[key_z], (x0, y0, x1, y1),
+            volume_zyx[key_z],
+            mask[key_z],
+            (x0, y0, x1, y1),
             out_dir / "overlays" / f"{study_uid}_{lid}.png",
         )
-
-
-def _render_text(report) -> str:
-    """Render the StudyReport as an abnormality-first, radiology-style text report.
-
-    Every number printed here is copied from a Sourced field, and each finding prints the
-    tool-call id that produced it. Nothing is narrated that a tool did not measure - the
-    same discipline the LLM orchestrator will have to keep in a later round.
-    """
-    targets = [f for f in report.findings if f.recist_category.value == "target"]
-    lines = [
-        f"STUDY {report.study_uid}",
-        f"{len(report.findings)} lesion candidate(s); "
-        f"{len(targets)} RECIST target, {len(report.findings) - len(targets)} non-target.",
-        "",
-        "FINDINGS:",
-    ]
-    if not report.findings:
-        lines.append("  No lesion candidates above the detector threshold.")
-
-    for f in sorted(report.findings, key=lambda r: -r.long_axis_mm.value):
-        site = f.organ + (f" ({f.lobe_or_segment})" if f.lobe_or_segment else "")
-        lines.append(
-            f"  {f.lesion_id}  {site} - {f.long_axis_mm.value:.1f} x "
-            f"{f.short_axis_mm.value:.1f} mm, volume {f.volume_mm3.value:.0f} mm^3"
-        )
-        lines.append(
-            f"        RECIST 1.1: {f.recist_category.value}  |  "
-            f"malignancy {f.malignancy_score.value:.2f} "
-            f"(confidence {f.malignancy_confidence:.2f})  |  "
-            f"detector {f.detector_score:.2f}"
-        )
-        lines.append(
-            f"        sources: size={f.long_axis_mm.source}, volume={f.volume_mm3.source}, "
-            f"malignancy={f.malignancy_score.source}"
-        )
-        if f.quality_flags:
-            lines.append(f"        QUALITY FLAGS: {', '.join(f.quality_flags)}")
-
-    lines += ["", "RECIST SUMMARY:"]
-    if report.recist_sum_of_diameters_mm:
-        lines.append(
-            f"  Sum of target-lesion long axes: "
-            f"{report.recist_sum_of_diameters_mm.value:.1f} mm "
-            f"(n={len(targets)}, source={report.recist_sum_of_diameters_mm.source})"
-        )
-        lines.append("  Baseline study - no prior for comparison, so no response category.")
-    else:
-        lines.append("  No measurable target lesion (all candidates < 10 mm long axis).")
-
-    lines += ["", "IMPRESSION:"]
-    if report.impression:
-        lines.append(f"  {report.impression}")
-    elif targets:
-        big = max(targets, key=lambda r: r.long_axis_mm.value)
-        lines.append(
-            f"  {len(report.findings)} pulmonary nodule candidate(s). Largest: {big.lesion_id}, "
-            f"{big.long_axis_mm.value:.1f} mm in {big.organ}"
-            f"{' (' + big.lobe_or_segment + ')' if big.lobe_or_segment else ''}, "
-            f"model malignancy score {big.malignancy_score.value:.2f}."
-        )
-        lines.append("  (Deterministic assembly - no LLM narration in this round.)")
-    else:
-        lines.append(
-            f"  {len(report.findings)} sub-centimetre nodule candidate(s); none measurable "
-            "as a RECIST target lesion. (Deterministic assembly - no LLM narration.)"
-        )
-
-    lines += ["", report.disclaimer]
-    return "\n".join(lines)
 
 
 def _save_overlay(slice_2d: np.ndarray, mask_2d: np.ndarray, box_xyxy, path: Path) -> None:

@@ -210,9 +210,13 @@ class ToolExecutor:
         if not path.exists():
             raise ToolError(f"Study not found: {path}")
         spacing = tuple(self.config["preprocess"]["target_spacing_mm"])
-        img = resample_to_spacing(read_mhd(path), spacing, is_label=False)
+        raw = read_mhd(path)
+        # Validate BEFORE resampling. resample_to_spacing pads outside-extent voxels with
+        # a -1024.0 air constant, so checking afterwards inspects a volume this pipeline
+        # has already widened; normalized input would pass on the padding alone.
+        assert_hounsfield_units(sitk.GetArrayFromImage(raw))
+        img = resample_to_spacing(raw, spacing, is_label=False)
         volume = sitk.GetArrayFromImage(img)
-        assert_hounsfield_units(volume)  # never silently accept non-HU input
 
         self.study_uid = path.stem
         self._volume = volume

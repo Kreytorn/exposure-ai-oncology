@@ -25,7 +25,8 @@
       "recist_category": "non_target",
       "detector_score": 0.9137150049209595,
       "requires_review": true,
-      "quality_flags": []
+      "quality_flags": [],
+      "recist_exclusion_reason": null
     },
     {
       "lesion_id": "L2",
@@ -48,12 +49,13 @@
         "source": "classify_L2"
       },
       "malignancy_confidence": 0.21928023416383302,
-      "recist_category": "target",
+      "recist_category": "non_target",
       "detector_score": 0.8733229041099548,
       "requires_review": true,
       "quality_flags": [
         "outside_lung_parenchyma"
-      ]
+      ],
+      "recist_exclusion_reason": "carries quality flag(s) outside_lung_parenchyma, so its measurement is not reliable enough to track"
     },
     {
       "lesion_id": "L3",
@@ -79,7 +81,8 @@
       "recist_category": "non_target",
       "detector_score": 0.6808785796165466,
       "requires_review": true,
-      "quality_flags": []
+      "quality_flags": [],
+      "recist_exclusion_reason": null
     },
     {
       "lesion_id": "L4",
@@ -105,7 +108,8 @@
       "recist_category": "non_target",
       "detector_score": 0.6313670873641968,
       "requires_review": true,
-      "quality_flags": []
+      "quality_flags": [],
+      "recist_exclusion_reason": null
     },
     {
       "lesion_id": "L5",
@@ -124,20 +128,18 @@
         "source": "measure_L5"
       },
       "malignancy_score": {
-        "value": 5.45504462934332e-6,
+        "value": 5.45504462934332e-06,
         "source": "classify_L5"
       },
       "malignancy_confidence": 0.9998967541776903,
       "recist_category": "non_target",
       "detector_score": 0.5152540802955627,
       "requires_review": true,
-      "quality_flags": []
+      "quality_flags": [],
+      "recist_exclusion_reason": null
     }
   ],
   "impression": "",
-  "recist_sum_of_diameters_mm": {
-    "value": 14.15,
-    "source": "measure_L2"
-  },
+  "recist_sum_of_diameters_mm": null,
   "disclaimer": "Research/decision-support output. Not a medical device. All findings are candidates requiring radiologist review."
 }

@@ -79,7 +79,7 @@ no API key and no GPU.
 | 2 | Organ context | TotalSegmentator (117 classes, 79 present in this scan) | no, pretrained |
 | 3 | Detection | MONAI `lung_nodule_ct_detection` (3D RetinaNet) | no, pretrained |
 | 4 | Segmentation | MedSAM2, box to 3D mask, run in an isolated env via a subprocess worker | no, pretrained |
-| 5 | Measurement | RECIST 1.1 long and short axis, volume | no, rule based |
+| 5 | Measurement | RECIST 1.1 long and short axis, volume, target selection | no, rule based |
 | 6 | Organ attribution | mask overlap against the cached organ map | no, rule based |
 | 7 | Malignancy | frozen detector trunk plus a small head, LIDC labels | **yes, the only training** |
 | 8 | Orchestration | LLM tool calling, Claude or Gemini | no |
@@ -104,6 +104,13 @@ would have removed. Organ attribution then found the mask overlapped no segmente
 at all, so it resolved to `background` and `outside_lung_parenchyma` fired. It reached the
 report as a candidate needing review rather than as a 14 mm lung nodule. A detector on its
 own would have reported it; the independent organ check is what caught it.
+
+L2 is also the largest lesion in the study and the only one over 10 mm, so under a plain
+"long axis >= 10 mm" rule it became the sole RECIST target and the entire sum of diameters.
+The headline number of the report was therefore sourced from the one finding the same report
+was warning about. `select_recist_targets` now refuses a flagged lesion as a target, so this
+study reports **no target lesion** and says which candidate was excluded and why, instead of
+publishing a 14.15 mm sum it does not trust.
 
 All 16 numbers in the agent's impression trace back to recorded tool calls. I re-checked that
 on the laptop against the saved trace rather than trusting the run that produced it. The
@@ -177,4 +184,4 @@ configs/         pipeline.yaml, agent_prompt.md
 results/agent/   the agent's report and its tool call trace
 ```
 
-61 tests, all passing, none needing a GPU or an API key.
+89 tests, all passing, none needing a GPU or an API key.

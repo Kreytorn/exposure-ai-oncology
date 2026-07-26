@@ -20,7 +20,7 @@ RECIST SUMMARY:
   Baseline study - no prior for comparison, so no response category.
 
 IMPRESSION:
-  4 pulmonary nodule candidate(s). Largest: L1, 15.8 mm in lung (upper lobe, left), model malignancy score 0.74.
+  4 pulmonary nodule candidate(s). Largest target: L1, 15.8 mm in lung (upper lobe, left), model malignancy score 0.74.
   (Deterministic assembly - no LLM narration in this round.)
 
 Research/decision-support output. Not a medical device. All findings are candidates requiring radiologist review.

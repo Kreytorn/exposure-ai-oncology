@@ -58,14 +58,28 @@ synthetic unit test (`tests/test_quality_flags.py`) covers that direction.
 | lesion | organ / lobe | long axis | volume | malignancy | RECIST |
 |---|---|---|---|---|---|
 | L1 | lung / upper lobe, left | 5.67 mm | 113.09 mm³ | 0.0002 | non-target |
-| L2 | background | 14.15 mm | 1292.20 mm³ | 0.2316 | **target** |
+| L2 | background | 14.15 mm | 1292.20 mm³ | 0.2316 | non-target (excluded, see below) |
 | L3 | lung / lower lobe, right | 5.07 mm | 87.14 mm³ | 0.0002 | non-target |
 | L4 | lung / lower lobe, left | 5.49 mm | 93.32 mm³ | 0.0001 | non-target |
 | L5 | lung / lower lobe, left | 5.07 mm | 108.15 mm³ | 0.0000 | non-target |
 
-RECIST sum of diameters: **14.15 mm** (the single target lesion), sourced to `d31253mn`.
-L2 correctly carries `outside_lung_parenchyma` - it attributed to background, which is what
-that flag exists to surface at the 0.02 detection threshold.
+L2 correctly carries `outside_lung_parenchyma`: it attributed to background, with an empty
+`overlap_fractions`, meaning zero overlap with any segmented structure.
+
+**Amended after the run.** As executed, this study reported a RECIST sum of diameters of
+14.15 mm sourced to `d31253mn`, because L2 was the only lesion over 10 mm and the assembler
+made every lesion over 10 mm a target. That put the report's headline number on the one
+finding the report itself was flagging. `select_recist_targets` now applies RECIST 1.1
+properly: a flagged lesion cannot be a target, at most two targets per organ, at most five
+in total. Under that rule this study has **no target lesion and no sum**, and names L2 as
+excluded with the reason.
+
+The report artefact in `results/agent/` was re-derived accordingly. The trace was NOT
+touched: it is the raw record of the run. The report is a derived artefact, so the recorded
+measurements were fed back through `build_study_report`, the same assembler the pipeline
+uses, with an assertion that no measurement, source id, organ, flag or the agent's own
+impression changed. Only `recist_category`, `recist_exclusion_reason` and
+`recist_sum_of_diameters_mm` differ, and only because the selection rule was fixed.
 
 **Re-verified offline on the laptop**, not merely trusted from the GPU run: the returned
 report was re-validated against the returned trace with `verify_traceability`. It passes.
@@ -117,7 +131,7 @@ The second run then produced the report above.
 - The **detection number is real**: 0.7755, reproduced exactly, out-of-fold, official script.
 - The **drift-flag regression is genuinely fixed** on real data, not just in a unit test.
 - The **agent completes a real multi-lesion study end to end** - 5 lesions, 24 tool calls,
-  a RECIST sum, and an impression whose every number is traceable to a tool call.
+  a RECIST verdict, and an impression whose every number is traceable to a tool call.
 
 ## What is still owed
 

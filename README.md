@@ -46,6 +46,10 @@ so it resolved to `background` and `outside_lung_parenchyma` fired. It reached t
 candidate needing review rather than as a 14 mm lung nodule. A detector on its own would have
 reported it; the independent organ check is what caught it.
 
+It is also the only lesion over 10 mm, so a plain size rule would make it the sole RECIST
+target and the whole sum of diameters. Target selection refuses a flagged lesion, so the
+study reports no target and names the excluded candidate instead of a number it distrusts.
+
 The agent's own closing line:
 
 > "Chest CT analysis revealed 5 nodular candidate findings. Lesion L1 (5.67 mm long axis,
@@ -92,7 +96,7 @@ segmenter. Both are listed under limitations in `plan.md`.
 conda env create -f environment.yml && conda activate oncoct
 pip install -e .
 
-pytest                                   # 61 tests, no GPU or API key needed
+pytest                                   # 89 tests, no GPU or API key needed
 
 # deterministic run
 python scripts/run_pipeline.py --series <scan.mhd> --out results

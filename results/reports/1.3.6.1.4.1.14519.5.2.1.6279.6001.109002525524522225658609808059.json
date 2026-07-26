@@ -25,7 +25,8 @@
       "recist_category": "target",
       "detector_score": 0.998498797416687,
       "requires_review": true,
-      "quality_flags": []
+      "quality_flags": [],
+      "recist_exclusion_reason": null
     },
     {
       "lesion_id": "L2",
@@ -51,7 +52,8 @@
       "recist_category": "target",
       "detector_score": 0.9764904975891113,
       "requires_review": true,
-      "quality_flags": []
+      "quality_flags": [],
+      "recist_exclusion_reason": null
     },
     {
       "lesion_id": "L3",
@@ -77,7 +79,8 @@
       "recist_category": "non_target",
       "detector_score": 0.8354835510253906,
       "requires_review": true,
-      "quality_flags": []
+      "quality_flags": [],
+      "recist_exclusion_reason": null
     },
     {
       "lesion_id": "L4",
@@ -103,7 +106,8 @@
       "recist_category": "non_target",
       "detector_score": 0.8006919622421265,
       "requires_review": true,
-      "quality_flags": []
+      "quality_flags": [],
+      "recist_exclusion_reason": null
     }
   ],
   "impression": "",

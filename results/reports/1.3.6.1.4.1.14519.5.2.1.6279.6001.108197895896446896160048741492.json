@@ -25,7 +25,8 @@
       "recist_category": "non_target",
       "detector_score": 0.9987094402313232,
       "requires_review": true,
-      "quality_flags": []
+      "quality_flags": [],
+      "recist_exclusion_reason": null
     }
   ],
   "impression": "",

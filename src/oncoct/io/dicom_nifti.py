@@ -43,16 +43,43 @@ def read_mhd(mhd_path: Path):
 def assert_hounsfield_units(volume, tolerance_frac: float = 0.01) -> None:
     """Sanity-check that a volume is in HU, not normalized.
 
-    Heuristic: a real chest CT has air near -1000 HU and dense bone > +700 HU, so the
-    value range should span well beyond [0, 1]. Raises ValueError if the range looks
-    like it was normalized away from HU.
+    A real chest CT has air near -1000 HU and dense tissue well above it, so the value
+    range should span far beyond [0, 1]. Raises ValueError if it looks normalized.
+
+    Two things make this robust that a plain min/max test is not.
+
+    First, voxels at or below the resampler's ``AIR_FILL_HU`` constant are discounted.
+    `resample_to_spacing` fills anything outside the source extent with that value, so a
+    rounded-up output grid gains a pad border. A volume normalized to [0, 1] then reads
+    as range 1025 and sails through a min/max test on the padding alone. Real CT is
+    unaffected: aerated lung sits near -900 and stays in the measured population.
+
+    Second, the remaining spread is measured on PERCENTILES, so a few stray outliers
+    cannot stand in for genuine tissue contrast. ``tolerance_frac`` sets that window.
+
+    Call this on the RAW volume, before resampling. Validating afterwards inspects a
+    volume the pipeline has already contaminated with its own padding constant.
     """
     import numpy as np
 
-    arr = np.asarray(volume)
-    lo, hi = float(arr.min()), float(arr.max())
-    if hi - lo < 100:  # normalized data would have a tiny range
+    from oncoct.io.resample import AIR_FILL_HU
+
+    arr = np.asarray(volume, dtype=np.float64)
+    if arr.size == 0:
+        raise ValueError("Empty volume: nothing to validate.")
+
+    core = arr[arr > AIR_FILL_HU]
+    if core.size == 0:
         raise ValueError(
-            f"Volume range [{lo:.3f}, {hi:.3f}] does not look like Hounsfield units. "
-            "Downstream pretrained models require raw HU - do not pre-normalize CT."
+            f"Volume is entirely at or below {AIR_FILL_HU} HU, so it carries no tissue "
+            "contrast. Downstream pretrained models require raw HU."
+        )
+
+    pct = max(0.0, min(50.0, tolerance_frac * 100.0))
+    lo, hi = (float(v) for v in np.percentile(core, [pct, 100.0 - pct]))
+    if hi - lo < 100:  # normalized data would have a tiny spread
+        raise ValueError(
+            f"Volume spread [{lo:.3f}, {hi:.3f}] between the {pct:g} and {100 - pct:g} "
+            f"percentiles of voxels above {AIR_FILL_HU} does not look like Hounsfield "
+            "units. Downstream pretrained models require raw HU - do not pre-normalize CT."
         )
